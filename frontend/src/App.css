@@ -321,3 +321,390 @@ body {
     margin-bottom: 0.25rem;
   }
 }
+
+/* Phase 2 Styles - Application Tracker */
+.application-tracker {
+  max-width: 100%;
+}
+
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tracker-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.application-form-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.application-form-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.application-form-content h4 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.application-selector {
+  margin-bottom: 1.5rem;
+}
+
+.application-selector label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.application-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.application-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.status-badge {
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.application-info {
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.progress-section {
+  margin-bottom: 1.5rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-header h5 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: #3498db;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-stages {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stage {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #f8f9fa;
+  color: #666;
+  font-size: 0.85rem;
+  min-width: 100px;
+}
+
+.stage.completed {
+  background: #d4edda;
+  color: #155724;
+  font-weight: 600;
+}
+
+.document-progress h5 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.document-summary {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #3498db;
+}
+
+.document-list {
+  margin-bottom: 1rem;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.document-item:last-child {
+  border-bottom: none;
+}
+
+.doc-status {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.doc-name {
+  flex: 1;
+}
+
+.pending-docs {
+  background: #fff3cd;
+  padding: 1rem;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+/* Phase 2 Styles - Financial Calculator */
+.financial-calculator {
+  max-width: 100%;
+}
+
+.financial-calculator h3 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.calculator-tabs {
+  display: flex;
+  background: white;
+  border-radius: 8px 8px 0 0;
+  overflow-x: auto;
+  margin-bottom: 0;
+}
+
+.calculator-tab {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #666;
+  min-width: 120px;
+  transition: all 0.2s;
+}
+
+.calculator-tab:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.calculator-tab:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.calculator-tab.active {
+  background: white;
+  color: #2c3e50;
+  font-weight: 600;
+  border-bottom: 3px solid #3498db;
+}
+
+.calculator-tab:hover:not(.active) {
+  background: #e9ecef;
+}
+
+.calculator-content {
+  background: white;
+  border-radius: 0 0 8px 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.calculator-form h4 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.calculation-results {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.calculation-results h5 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.qualification-status {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.qualification-status.qualified {
+  background: #d4edda;
+  color: #155724;
+}
+
+.qualification-status.not-qualified {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.assistance-note {
+  background: #e7f3ff;
+  color: #0366d6;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Mobile Responsive Updates */
+@media (max-width: 768px) {
+  .tracker-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tracker-header .btn-primary {
+    width: 100%;
+  }
+  
+  .application-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .progress-stages {
+    flex-direction: column;
+  }
+  
+  .stage {
+    min-width: auto;
+  }
+  
+  .calculator-tabs {
+    flex-direction: column;
+  }
+  
+  .calculator-tab {
+    min-width: auto;
+    border-radius: 0 !important;
+  }
+  
+  .calculator-tab:first-child {
+    border-radius: 8px 8px 0 0 !important;
+  }
+  
+  .calculator-tab:last-child {
+    border-radius: 0 !important;
+  }
+  
+  .calculator-content {
+    border-radius: 0 0 8px 8px;
+  }
+  
+  .result-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
