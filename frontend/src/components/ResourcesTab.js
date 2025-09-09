@@ -57,11 +57,24 @@ const ResourcesTab = ({ api, analytics }) => {
   };
 
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(selectedCategory === categoryId ? '' : categoryId);
+    const newCategory = selectedCategory === categoryId ? '' : categoryId;
+    setSelectedCategory(newCategory);
+    
+    // Track category filter usage
+    if (analytics) {
+      analytics.trackButtonClick(`category_${categoryId}`, 'resources');
+    }
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+    
+    // Track search usage with debouncing
+    if (analytics && e.target.value.length > 2) {
+      setTimeout(() => {
+        analytics.trackSearch(e.target.value, 'resources', filteredResources.length);
+      }, 500);
+    }
   };
 
   if (loading) {
