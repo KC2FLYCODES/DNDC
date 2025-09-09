@@ -9,6 +9,17 @@ const AdminDashboard = ({ api, onLogout }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showResourceForm, setShowResourceForm] = useState(false);
+  const [editingResource, setEditingResource] = useState(null);
+  const [resourceForm, setResourceForm] = useState({
+    name: '',
+    description: '',
+    category: 'housing',
+    phone: '',
+    address: '',
+    hours: '',
+    eligibility: ''
+  });
 
   const adminTabs = [
     { id: 'analytics', label: 'Analytics Dashboard', icon: '📊' },
