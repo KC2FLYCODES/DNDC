@@ -1,5 +1,30 @@
 {
   "appId": "com.dndc.resourcehub",
   "appName": "DNDC Resource Hub",
-  "webDir": "build"
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#488AFF",
+      "sound": "beep.wav"
+    },
+    "Camera": {
+      "permissions": ["camera", "photos", "microphone"]
+    }
+  },
+  "ios": {
+    "scheme": "DNDC Resource Hub",
+    "limitsNavigationsToAppBoundDomains": true
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
 }
