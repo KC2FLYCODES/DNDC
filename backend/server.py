@@ -97,6 +97,29 @@ class ContactMessageCreate(BaseModel):
     phone: Optional[str] = None
     message: str
 
+# Analytics and Admin Models
+class UsageMetric(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    event_type: str  # page_view, button_click, form_submit, document_upload, etc.
+    page: str
+    user_session: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    user_info: Optional[dict] = None
+    metadata: Optional[dict] = None
+
+class AdminUser(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    email: str
+    role: str = "admin"  # admin, staff, super_admin
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    last_login: Optional[datetime] = None
+    is_active: bool = True
+
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
 # Phase 2 Models - Application Status Tracker
 class Application(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
