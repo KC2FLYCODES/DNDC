@@ -725,6 +725,41 @@ async def startup_db():
             }
         ]
         await db.alerts.insert_many(default_alerts)
+    
+    # Initialize sample applications for Phase 2
+    existing_applications = await db.applications.count_documents({})
+    if existing_applications == 0:
+        sample_applications = [
+            {
+                "id": str(uuid.uuid4()),
+                "applicant_name": "Sarah Johnson",
+                "applicant_email": "sarah.j@email.com",
+                "applicant_phone": "434-555-0123",
+                "application_type": "mission_180",
+                "status": "under_review",
+                "progress_percentage": 75,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+                "notes": "Awaiting final income verification",
+                "required_documents": ["Photo ID", "Proof of Income", "Social Security Card", "Birth Certificates", "Landlord References", "Bank Statements"],
+                "completed_documents": ["Photo ID", "Social Security Card", "Birth Certificates", "Bank Statements"]
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "applicant_name": "Michael Davis",
+                "applicant_email": "m.davis@email.com",
+                "applicant_phone": "434-555-0456",
+                "application_type": "mission_180",
+                "status": "submitted",
+                "progress_percentage": 25,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+                "notes": "Application recently submitted",
+                "required_documents": ["Photo ID", "Proof of Income", "Social Security Card", "Birth Certificates", "Landlord References", "Bank Statements"],
+                "completed_documents": ["Photo ID"]
+            }
+        ]
+        await db.applications.insert_many(sample_applications)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
