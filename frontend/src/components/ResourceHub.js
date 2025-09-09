@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ResourcesTab from './ResourcesTab';
 import DocumentsTab from './DocumentsTab';
@@ -12,17 +12,39 @@ const API = `${BACKEND_URL}/api`;
 
 const ResourceHub = () => {
   const [activeTab, setActiveTab] = useState('resources');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const dropdownRef = useRef(null);
 
   const tabs = [
-    { id: 'resources', label: 'Resources' },
-    { id: 'applications', label: 'My Application' },
-    { id: 'calculator', label: 'Calculator' },
-    { id: 'documents', label: 'Documents' },
-    { id: 'alerts', label: 'Alerts' },
-    { id: 'contact', label: 'Contact' }
+    { id: 'resources', label: 'Community Resources', icon: '🏘️' },
+    { id: 'applications', label: 'My Application', icon: '📋' },
+    { id: 'calculator', label: 'Financial Calculator', icon: '💰' },
+    { id: 'documents', label: 'Document Upload', icon: '📄' },
+    { id: 'alerts', label: 'Alerts & Updates', icon: '📢' },
+    { id: 'contact', label: 'Contact DNDC', icon: '📞' }
   ];
+
+  const currentTab = tabs.find(tab => tab.id === activeTab);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setDropdownOpen(false);
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -61,17 +83,42 @@ const ResourceHub = () => {
         </div>
       </header>
       
-      <nav className="nav-tabs">
-        <div className="nav-tabs-container">
-          {tabs.map(tab => (
+      <nav className="nav-dropdown-container">
+        <div className="nav-dropdown-wrapper">
+          <div className="nav-dropdown" ref={dropdownRef}>
             <button
-              key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
+              className="nav-dropdown-button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              aria-expanded={dropdownOpen}
+              aria-haspopup="true"
             >
-              {tab.label}
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span className="nav-dropdown-item-icon">{currentTab?.icon}</span>
+                {currentTab?.label}
+              </span>
+              <span className={`nav-dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>
+                ▼
+              </span>
             </button>
-          ))}
+            
+            {dropdownOpen && (
+              <>
+                <div className="nav-dropdown-overlay" onClick={() => setDropdownOpen(false)} />
+                <div className={`nav-dropdown-menu ${dropdownOpen ? 'open' : ''}`}>
+                  {tabs.map(tab => (
+                    <div
+                      key={tab.id}
+                      className={`nav-dropdown-item ${activeTab === tab.id ? 'active' : ''}`}
+                      onClick={() => handleTabChange(tab.id)}
+                    >
+                      <span className="nav-dropdown-item-icon">{tab.icon}</span>
+                      {tab.label}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </nav>
       
