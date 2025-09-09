@@ -97,6 +97,62 @@ class ContactMessageCreate(BaseModel):
     phone: Optional[str] = None
     message: str
 
+# Phase 2 Models - Application Status Tracker
+class Application(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    applicant_name: str
+    applicant_email: Optional[str] = None
+    applicant_phone: Optional[str] = None
+    application_type: str = "mission_180"  # mission_180, rental_assistance, etc.
+    status: str = "submitted"  # submitted, under_review, approved, denied
+    progress_percentage: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    notes: Optional[str] = None
+    estimated_completion: Optional[datetime] = None
+    required_documents: List[str] = []
+    completed_documents: List[str] = []
+
+class ApplicationCreate(BaseModel):
+    applicant_name: str
+    applicant_email: Optional[str] = None
+    applicant_phone: Optional[str] = None
+    application_type: str = "mission_180"
+
+class ApplicationUpdate(BaseModel):
+    status: Optional[str] = None
+    progress_percentage: Optional[int] = None
+    notes: Optional[str] = None
+    estimated_completion: Optional[datetime] = None
+
+# Phase 2 Models - Financial Calculator
+class LoanCalculation(BaseModel):
+    loan_amount: float
+    interest_rate: float
+    loan_term_years: int
+    monthly_payment: float
+    total_interest: float
+    total_cost: float
+    calculated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class IncomeQualification(BaseModel):
+    household_size: int
+    annual_income: float
+    area_median_income: float
+    qualification_percentage: float
+    qualifies: bool
+    max_income_limit: float
+    calculated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UtilityAssistance(BaseModel):
+    household_size: int
+    monthly_income: float
+    utility_type: str  # electric, gas, water, combined
+    monthly_utility_cost: float
+    assistance_amount: float
+    assistance_percentage: float
+    calculated_at: datetime = Field(default_factory=datetime.utcnow)
+
 # Basic status check endpoints
 @api_router.get("/")
 async def root():
