@@ -75,12 +75,15 @@ const ResourceHub = () => {
     analytics.trackButtonClick(`nav_${tabId}`, 'navigation');
     
     // Haptic feedback on native devices
-    if (isNative && window.Capacitor) {
-      import('@capacitor/haptics').then(({ Haptics, ImpactStyle }) => {
-        Haptics.impact({ style: ImpactStyle.Light });
-      }).catch(() => {
+    if (isNative) {
+      try {
+        import('@capacitor/haptics').then(({ Haptics, ImpactStyle }) => {
+          Haptics.impact({ style: ImpactStyle.Light });
+        });
+      } catch (error) {
         // Haptics not available
-      });
+        console.log('Haptics not available');
+      }
     }
   };
 
