@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ResourcesTab = ({ api }) => {
+const ResourcesTab = ({ api, analytics }) => {
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
