@@ -6,6 +6,9 @@ import AlertsTab from './AlertsTab';
 import ContactTab from './ContactTab';
 import ApplicationTracker from './ApplicationTracker';
 import FinancialCalculator from './FinancialCalculator';
+import AdminLogin from './AdminLogin';
+import AdminDashboard from './AdminDashboard';
+import AnalyticsTracker from './AnalyticsTracker';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -15,7 +18,11 @@ const ResourceHub = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [adminToken, setAdminToken] = useState(null);
   const dropdownRef = useRef(null);
+  const [analytics] = useState(new AnalyticsTracker(API));
 
   const tabs = [
     { id: 'resources', label: 'Community Resources', icon: '🏘️' },
@@ -29,6 +36,9 @@ const ResourceHub = () => {
   const currentTab = tabs.find(tab => tab.id === activeTab);
 
   useEffect(() => {
+    // Track initial page view
+    analytics.trackPageView('resources');
+    
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -39,31 +49,62 @@ const ResourceHub = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [analytics]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setDropdownOpen(false);
+    
+    // Track page view
+    analytics.trackPageView(tabId);
+    analytics.trackButtonClick(`nav_${tabId}`, 'navigation');
+  };
+
+  const handleAdminLogin = (user, token) => {
+    setAdminUser(user);
+    setAdminToken(token);
+    setShowAdminLogin(false);
+    
+    // Track admin login
+    analytics.track('admin_login', 'admin', { username: user.username, role: user.role });
+  };
+
+  const handleAdminLogout = () => {
+    setAdminUser(null);
+    setAdminToken(null);
+    
+    // Track admin logout
+    analytics.track('admin_logout', 'admin');
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'resources':
-        return <ResourcesTab api={API} />;
+        return <ResourcesTab api={API} analytics={analytics} />;
       case 'applications':
-        return <ApplicationTracker api={API} />;
+        return <ApplicationTracker api={API} analytics={analytics} />;
       case 'calculator':
-        return <FinancialCalculator api={API} />;
+        return <FinancialCalculator api={API} analytics={analytics} />;
       case 'documents':
-        return <DocumentsTab api={API} />;
+        return <DocumentsTab api={API} analytics={analytics} />;
       case 'alerts':
-        return <AlertsTab api={API} />;
+        return <AlertsTab api={API} analytics={analytics} />;
       case 'contact':
-        return <ContactTab api={API} />;
+        return <ContactTab api={API} analytics={analytics} />;
       default:
-        return <ResourcesTab api={API} />;
+        return <ResourcesTab api={API} analytics={analytics} />;
     }
   };
+
+  // Show admin dashboard if logged in as admin
+  if (adminUser) {
+    return <AdminDashboard api={API} onLogout={handleAdminLogout} />;
+  }
+
+  // Show admin login modal
+  if (showAdminLogin) {
+    return <AdminLogin api={API} onLogin={handleAdminLogin} />;
+  }
 
   return (
     <div className="resource-hub">
@@ -80,6 +121,27 @@ const ResourceHub = () => {
             <div className="subtitle">Danville Neighborhood Development Corporation</div>
             <div className="powered-by">Powered by Community Development Technology Platform</div>
           </div>
+          <button 
+            className="admin-access-btn"
+            onClick={() => setShowAdminLogin(true)}
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              border: '1px solid rgba(255,255,255,0.3)',
+              padding: '0.5rem 1rem',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+          >
+            🛠️ Admin
+          </button>
         </div>
       </header>
       
@@ -88,7 +150,10 @@ const ResourceHub = () => {
           <div className="nav-dropdown" ref={dropdownRef}>
             <button
               className="nav-dropdown-button"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              onClick={() => {
+                setDropdownOpen(!dropdownOpen);
+                analytics.trackButtonClick('navigation_dropdown', 'navigation');
+              }}
               aria-expanded={dropdownOpen}
               aria-haspopup="true"
             >
