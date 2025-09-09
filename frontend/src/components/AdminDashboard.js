@@ -140,6 +140,88 @@ const AdminDashboard = ({ api, onLogout }) => {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleResourceSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!resourceForm.name.trim() || !resourceForm.description.trim()) {
+      setError('Name and description are required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      if (editingResource) {
+        // Update existing resource
+        await axios.put(`${api}/admin/resources/${editingResource.id}`, resourceForm);
+      } else {
+        // Create new resource
+        await axios.post(`${api}/resources`, resourceForm);
+      }
+      
+      await fetchResources();
+      setShowResourceForm(false);
+      setEditingResource(null);
+      setResourceForm({
+        name: '',
+        description: '',
+        category: 'housing',
+        phone: '',
+        address: '',
+        hours: '',
+        eligibility: ''
+      });
+      setError(null);
+    } catch (err) {
+      setError(`Failed to ${editingResource ? 'update' : 'create'} resource`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditResource = (resource) => {
+    setEditingResource(resource);
+    setResourceForm({
+      name: resource.name,
+      description: resource.description,
+      category: resource.category,
+      phone: resource.phone || '',
+      address: resource.address || '',
+      hours: resource.hours || '',
+      eligibility: resource.eligibility || ''
+    });
+    setShowResourceForm(true);
+  };
+
+  const handleDeleteResource = async (resourceId) => {
+    if (!window.confirm('Are you sure you want to delete this resource?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${api}/admin/resources/${resourceId}`);
+      await fetchResources();
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete resource');
+    }
+  };
+
+  const resetResourceForm = () => {
+    setShowResourceForm(false);
+    setEditingResource(null);
+    setResourceForm({
+      name: '',
+      description: '',
+      category: 'housing',
+      phone: '',
+      address: '',
+      hours: '',
+      eligibility: ''
+    });
+    setError(null);
+  };
+
   const renderAnalytics = () => (
     <div>
       <div className="admin-header">
