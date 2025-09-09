@@ -169,14 +169,33 @@ async def update_document(document_id: str, update_data: DocumentUpdate):
 @api_router.post("/documents/upload/{document_id}")
 async def upload_document(document_id: str, file: UploadFile = File(...)):
     # In a real app, you'd save the file to cloud storage
-    # For now, we'll just mark it as uploaded
+    # For now, we'll simulate file storage
+    import shutil
+    from pathlib import Path
+    
+    # Create uploads directory if it doesn't exist
+    upload_dir = Path("uploads")
+    upload_dir.mkdir(exist_ok=True)
+    
+    # Generate unique filename
+    file_extension = Path(file.filename).suffix
+    unique_filename = f"{document_id}_{uuid.uuid4().hex[:8]}{file_extension}"
+    file_path = upload_dir / unique_filename
+    
+    # Save the file
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    # Update document in database
     update_result = await db.documents.update_one(
         {"id": document_id},
         {
             "$set": {
                 "is_uploaded": True,
                 "uploaded_at": datetime.utcnow(),
-                "file_path": f"uploads/{file.filename}"
+                "file_path": str(file_path),
+                "original_filename": file.filename,
+                "file_size": file_path.stat().st_size if file_path.exists() else 0
             }
         }
     )
@@ -184,7 +203,96 @@ async def upload_document(document_id: str, file: UploadFile = File(...)):
     if update_result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Document not found")
     
-    return {"message": "File uploaded successfully", "filename": file.filename}
+    document = await db.documents.find_one({"id": document_id})
+    return Document(**document)
+
+@api_router.post("/documents/replace/{document_id}")
+async def replace_document(document_id: str, file: UploadFile = File(...)):
+    # Get existing document
+    existing_doc = await db.documents.find_one({"id": document_id})
+    if not existing_doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Delete old file if it exists
+    if existing_doc.get("file_path"):
+        old_file_path = Path(existing_doc["file_path"])
+        if old_file_path.exists():
+            old_file_path.unlink()
+    
+    # Upload new file using the same logic as upload
+    return await upload_document(document_id, file)
+
+@api_router.get("/documents/{document_id}/download")
+async def download_document(document_id: str):
+    from fastapi.responses import FileResponse
+    
+    document = await db.documents.find_one({"id": document_id})
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if not document.get("file_path"):
+        raise HTTPException(status_code=404, detail="No file uploaded for this document")
+    
+    file_path = Path(document["file_path"])
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found on disk")
+    
+    return FileResponse(
+        path=file_path,
+        filename=document.get("original_filename", file_path.name),
+        media_type='application/octet-stream'
+    )
+
+@api_router.get("/documents/{document_id}/view")
+async def view_document(document_id: str):
+    document = await db.documents.find_one({"id": document_id})
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if not document.get("file_path"):
+        raise HTTPException(status_code=404, detail="No file uploaded for this document")
+    
+    file_path = Path(document["file_path"])
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found on disk")
+    
+    return {
+        "id": document["id"],
+        "name": document["name"],
+        "original_filename": document.get("original_filename"),
+        "file_size": document.get("file_size", 0),
+        "uploaded_at": document.get("uploaded_at"),
+        "file_path": document["file_path"],
+        "download_url": f"/api/documents/{document_id}/download"
+    }
+
+@api_router.delete("/documents/{document_id}/file")
+async def delete_document_file(document_id: str):
+    document = await db.documents.find_one({"id": document_id})
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Delete file from disk if it exists
+    if document.get("file_path"):
+        file_path = Path(document["file_path"])
+        if file_path.exists():
+            file_path.unlink()
+    
+    # Update document in database
+    await db.documents.update_one(
+        {"id": document_id},
+        {
+            "$set": {
+                "is_uploaded": False,
+                "file_path": None,
+                "original_filename": None,
+                "file_size": 0,
+                "uploaded_at": None
+            }
+        }
+    )
+    
+    return {"message": "File deleted successfully"}
 
 # Alert endpoints
 @api_router.get("/alerts", response_model=List[Alert])
