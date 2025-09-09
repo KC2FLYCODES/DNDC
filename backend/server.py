@@ -625,6 +625,228 @@ async def calculate_utility_assistance(household_size: int, monthly_income: floa
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Calculation error: {str(e)}")
 
+# Analytics and Usage Tracking Endpoints
+@api_router.post("/analytics/track")
+async def track_usage(event_type: str, page: str, user_session: str, metadata: dict = None):
+    """Track user interactions for analytics"""
+    try:
+        metric = UsageMetric(
+            event_type=event_type,
+            page=page,
+            user_session=user_session,
+            metadata=metadata or {}
+        )
+        await db.usage_metrics.insert_one(metric.dict())
+        return {"status": "tracked"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@api_router.get("/analytics/dashboard")
+async def get_analytics_dashboard():
+    """Get comprehensive analytics for admin dashboard"""
+    try:
+        # Get date range for last 30 days
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        
+        # Page views by day
+        page_views_pipeline = [
+            {"$match": {"timestamp": {"$gte": thirty_days_ago}, "event_type": "page_view"}},
+            {"$group": {
+                "_id": {"$dateToString": {"format": "%Y-%m-%d", "date": "$timestamp"}},
+                "count": {"$sum": 1}
+            }},
+            {"$sort": {"_id": 1}}
+        ]
+        page_views = await db.usage_metrics.aggregate(page_views_pipeline).to_list(100)
+        
+        # Most popular pages
+        popular_pages_pipeline = [
+            {"$match": {"timestamp": {"$gte": thirty_days_ago}, "event_type": "page_view"}},
+            {"$group": {"_id": "$page", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+            {"$limit": 10}
+        ]
+        popular_pages = await db.usage_metrics.aggregate(popular_pages_pipeline).to_list(100)
+        
+        # Application completion rates
+        total_applications = await db.applications.count_documents({})
+        completed_applications = await db.applications.count_documents({"status": {"$in": ["approved", "denied"]}})
+        in_progress_applications = await db.applications.count_documents({"status": {"$in": ["submitted", "under_review"]}})
+        
+        # Document upload rates
+        total_documents = await db.documents.count_documents({})
+        uploaded_documents = await db.documents.count_documents({"is_uploaded": True})
+        
+        # Calculator usage
+        loan_calculations = await db.loan_calculations.count_documents({"calculated_at": {"$gte": thirty_days_ago}})
+        income_checks = await db.income_qualifications.count_documents({"calculated_at": {"$gte": thirty_days_ago}})
+        utility_calculations = await db.utility_assistance_calculations.count_documents({"calculated_at": {"$gte": thirty_days_ago}})
+        
+        # Contact messages
+        recent_messages = await db.contact_messages.count_documents({"created_at": {"$gte": thirty_days_ago}})
+        
+        return {
+            "page_views_by_day": page_views,
+            "popular_pages": popular_pages,
+            "applications": {
+                "total": total_applications,
+                "completed": completed_applications,
+                "in_progress": in_progress_applications,
+                "completion_rate": (completed_applications / total_applications * 100) if total_applications > 0 else 0
+            },
+            "documents": {
+                "total": total_documents,
+                "uploaded": uploaded_documents,
+                "upload_rate": (uploaded_documents / total_documents * 100) if total_documents > 0 else 0
+            },
+            "calculators": {
+                "loan_calculations": loan_calculations,
+                "income_checks": income_checks,
+                "utility_calculations": utility_calculations,
+                "total_calculations": loan_calculations + income_checks + utility_calculations
+            },
+            "engagement": {
+                "recent_messages": recent_messages
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analytics error: {str(e)}")
+
+# Admin Authentication and Management
+@api_router.post("/admin/login")
+async def admin_login(credentials: AdminLogin):
+    """Simple admin authentication (in production, use proper auth with JWT)"""
+    # In production, hash passwords and use proper authentication
+    admin_credentials = {
+        "admin": "admin123",
+        "staff": "staff123",
+        "dndc_admin": "dndc2024"
+    }
+    
+    if credentials.username in admin_credentials and admin_credentials[credentials.username] == credentials.password:
+        # Update last login
+        await db.admin_users.update_one(
+            {"username": credentials.username},
+            {"$set": {"last_login": datetime.utcnow()}},
+            upsert=True
+        )
+        
+        return {
+            "success": True,
+            "user": {
+                "username": credentials.username,
+                "role": "admin" if credentials.username == "dndc_admin" else "staff"
+            },
+            "token": f"admin_token_{credentials.username}"  # In production, use JWT
+        }
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@api_router.get("/admin/applications")
+async def get_admin_applications():
+    """Get all applications for admin review"""
+    applications = await db.applications.find({}).sort("created_at", -1).to_list(1000)
+    return [Application(**app) for app in applications]
+
+@api_router.put("/admin/applications/{application_id}/status")
+async def update_application_status_admin(application_id: str, status: str, notes: str = ""):
+    """Admin endpoint to update application status"""
+    update_data = {
+        "status": status,
+        "updated_at": datetime.utcnow(),
+        "notes": notes
+    }
+    
+    # Auto-calculate progress based on status
+    status_progress = {
+        "submitted": 25,
+        "under_review": 50,
+        "approved": 100,
+        "denied": 100
+    }
+    update_data["progress_percentage"] = status_progress.get(status, 0)
+    
+    result = await db.applications.update_one(
+        {"id": application_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    return {"success": True, "message": "Application status updated"}
+
+@api_router.get("/admin/resources")
+async def get_admin_resources():
+    """Get all resources for admin management"""
+    resources = await db.resources.find({}).sort("created_at", -1).to_list(1000)
+    return [Resource(**resource) for resource in resources]
+
+@api_router.put("/admin/resources/{resource_id}")
+async def update_resource_admin(resource_id: str, resource_data: ResourceCreate):
+    """Admin endpoint to update resources"""
+    result = await db.resources.update_one(
+        {"id": resource_id},
+        {"$set": resource_data.dict()}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Resource not found")
+    
+    return {"success": True, "message": "Resource updated"}
+
+@api_router.delete("/admin/resources/{resource_id}")
+async def delete_resource_admin(resource_id: str):
+    """Admin endpoint to delete resources"""
+    result = await db.resources.delete_one({"id": resource_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Resource not found")
+    
+    return {"success": True, "message": "Resource deleted"}
+
+@api_router.get("/admin/messages")
+async def get_admin_messages():
+    """Get all contact messages for admin review"""
+    messages = await db.contact_messages.find({}).sort("created_at", -1).to_list(1000)
+    return [ContactMessage(**msg) for msg in messages]
+
+@api_router.put("/admin/messages/{message_id}/status")
+async def update_message_status_admin(message_id: str, status: str):
+    """Admin endpoint to update message status"""
+    result = await db.contact_messages.update_one(
+        {"id": message_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    return {"success": True, "message": "Message status updated"}
+
+@api_router.get("/admin/export/applications")
+async def export_applications():
+    """Export applications data for admin reporting"""
+    applications = await db.applications.find({}).to_list(1000)
+    
+    # Convert to CSV-friendly format
+    export_data = []
+    for app in applications:
+        export_data.append({
+            "id": app["id"],
+            "applicant_name": app["applicant_name"],
+            "applicant_email": app.get("applicant_email", ""),
+            "application_type": app["application_type"],
+            "status": app["status"],
+            "progress_percentage": app["progress_percentage"],
+            "created_at": app["created_at"].isoformat(),
+            "updated_at": app["updated_at"].isoformat(),
+            "completed_documents": len(app.get("completed_documents", [])),
+            "total_documents": len(app.get("required_documents", []))
+        })
+    
+    return export_data
+
 # Include the router in the main app
 app.include_router(api_router)
 
