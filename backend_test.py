@@ -198,9 +198,82 @@ class DNDCAPITester:
             }
         )
 
+    def test_phase2_applications_endpoints(self):
+        """Test Phase 2 Application Status Tracker endpoints"""
+        print("\n=== TESTING PHASE 2 - APPLICATION TRACKER ENDPOINTS ===")
+        
+        # Get all applications (should have sample data)
+        success, applications = self.run_test("Get All Applications", "GET", "applications", 200)
+        
+        if success and applications:
+            print(f"   Found {len(applications)} sample applications")
+            
+            # Test getting specific application
+            app_id = applications[0]['id']
+            self.run_test("Get Specific Application", "GET", f"applications/{app_id}", 200)
+            
+            # Test updating application status
+            self.run_test(
+                "Update Application Status",
+                "PUT",
+                f"applications/{app_id}",
+                200,
+                data={"status": "under_review", "progress_percentage": 50}
+            )
+            
+            # Test linking document to application
+            self.run_test(
+                "Link Document to Application",
+                "POST",
+                f"applications/{app_id}/documents?document_name=Photo ID",
+                200
+            )
+        
+        # Test creating new application
+        self.run_test(
+            "Create New Application",
+            "POST",
+            "applications",
+            200,
+            data={
+                "applicant_name": "Test Applicant",
+                "applicant_email": "test@example.com",
+                "applicant_phone": "434-555-0999",
+                "application_type": "mission_180"
+            }
+        )
+
+    def test_phase2_financial_calculator_endpoints(self):
+        """Test Phase 2 Financial Calculator endpoints"""
+        print("\n=== TESTING PHASE 2 - FINANCIAL CALCULATOR ENDPOINTS ===")
+        
+        # Test loan calculation
+        self.run_test(
+            "Calculate Loan Payment",
+            "POST",
+            "calculate/loan?loan_amount=150000&interest_rate=4.5&loan_term_years=30",
+            200
+        )
+        
+        # Test income qualification
+        self.run_test(
+            "Check Income Qualification",
+            "POST",
+            "calculate/income-qualification?household_size=2&annual_income=45000",
+            200
+        )
+        
+        # Test utility assistance calculation
+        self.run_test(
+            "Calculate Utility Assistance",
+            "POST",
+            "calculate/utility-assistance?household_size=2&monthly_income=3500&utility_type=combined&monthly_utility_cost=200",
+            200
+        )
+
     def run_all_tests(self):
         """Run all API tests"""
-        print("🚀 Starting DNDC Resource Hub API Tests")
+        print("🚀 Starting DNDC Resource Hub API Tests - Phase 2 Enhanced")
         print(f"Testing against: {self.base_url}")
         
         try:
@@ -209,6 +282,10 @@ class DNDCAPITester:
             self.test_documents_endpoints()
             self.test_alerts_endpoints()
             self.test_contact_endpoints()
+            
+            # Phase 2 Tests
+            self.test_phase2_applications_endpoints()
+            self.test_phase2_financial_calculator_endpoints()
             
         except Exception as e:
             print(f"\n❌ Test suite failed with error: {str(e)}")
