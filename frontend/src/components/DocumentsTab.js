@@ -163,9 +163,45 @@ const DocumentsTab = ({ api }) => {
 
   return (
     <div className="document-checklist">
-      <h3 style={{ marginBottom: '1rem' }}>Housing Application Checklist</h3>
+      <div className="card-header">
+        <div>
+          <h3 className="card-title">Housing Application Checklist</h3>
+          <p className="card-subtitle">Upload your required documents to complete your Mission 180 application</p>
+        </div>
+      </div>
       
       {error && <div className="error">{error}</div>}
+      
+      <div style={{ 
+        background: '#f7fafc', 
+        padding: '1rem', 
+        borderRadius: '8px', 
+        marginBottom: '1.5rem',
+        border: '1px solid #e2e8f0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '1.2rem' }}>📋</span>
+          <strong style={{ color: '#2d3748' }}>
+            Progress: {documents.filter(d => d.is_uploaded).length} of {documents.length} documents completed
+          </strong>
+        </div>
+        <div style={{ 
+          width: '100%', 
+          height: '8px', 
+          background: '#e2e8f0', 
+          borderRadius: '4px', 
+          overflow: 'hidden' 
+        }}>
+          <div 
+            style={{ 
+              height: '100%', 
+              background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+              width: `${documents.length > 0 ? (documents.filter(d => d.is_uploaded).length / documents.length) * 100 : 0}%`,
+              transition: 'width 0.5s ease'
+            }}
+          />
+        </div>
+      </div>
       
       {documents.map(document => (
         <div key={document.id} className="checklist-item">
@@ -176,13 +212,13 @@ const DocumentsTab = ({ api }) => {
             readOnly
           />
           <div className="checklist-label">
-            <div>{document.name}</div>
-            <div style={{ fontSize: '0.8rem', color: '#666' }}>
+            <div style={{ fontWeight: '600', color: '#2d3748' }}>{document.name}</div>
+            <div style={{ fontSize: '0.9rem', color: '#718096', marginTop: '0.25rem' }}>
               {document.description}
             </div>
             {document.is_uploaded && (
               <div className="file-info">
-                Uploaded: {formatDate(document.uploaded_at)} 
+                ✅ Uploaded: {formatDate(document.uploaded_at)} 
                 {document.original_filename && ` • ${document.original_filename}`}
                 {document.file_size && ` • ${formatFileSize(document.file_size)}`}
               </div>
@@ -204,7 +240,7 @@ const DocumentsTab = ({ api }) => {
                   onClick={() => document.getElementById(`upload-${document.id}`).click()}
                   disabled={uploadingId === document.id}
                 >
-                  {uploadingId === document.id ? 'Uploading...' : 'Upload'}
+                  {uploadingId === document.id ? 'Uploading...' : '📁 Upload'}
                 </button>
               </>
             ) : (
@@ -212,8 +248,9 @@ const DocumentsTab = ({ api }) => {
                 <button
                   className="action-btn"
                   onClick={() => handleFileView(document.id)}
+                  title="View file details"
                 >
-                  View
+                  👁️ View
                 </button>
                 <input
                   type="file"
@@ -226,20 +263,23 @@ const DocumentsTab = ({ api }) => {
                   className="action-btn secondary"
                   onClick={() => document.getElementById(`replace-${document.id}`).click()}
                   disabled={uploadingId === document.id}
+                  title="Replace with new file"
                 >
-                  {uploadingId === document.id ? 'Replacing...' : 'Replace'}
+                  {uploadingId === document.id ? 'Replacing...' : '🔄 Replace'}
                 </button>
                 <button
                   className="action-btn"
                   onClick={() => window.open(`${api}/documents/${document.id}/download`, '_blank')}
+                  title="Download file"
                 >
-                  Download
+                  💾 Download
                 </button>
                 <button
                   className="action-btn danger"
                   onClick={() => handleFileDelete(document.id)}
+                  title="Delete file"
                 >
-                  Delete
+                  🗑️ Delete
                 </button>
               </>
             )}
@@ -247,14 +287,27 @@ const DocumentsTab = ({ api }) => {
         </div>
       ))}
       
-      <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-        <h4 style={{ marginBottom: '0.5rem' }}>Accepted File Formats:</h4>
-        <p style={{ fontSize: '0.9rem', color: '#666' }}>
-          PDF, Word documents (.doc, .docx), Images (.jpg, .jpeg, .png), Text files (.txt)
-        </p>
-        <p style={{ fontSize: '0.8rem', color: '#999', marginTop: '0.5rem' }}>
-          Maximum file size: 10MB per file
-        </p>
+      <div style={{ 
+        marginTop: '2rem', 
+        padding: '1.5rem', 
+        background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)', 
+        borderRadius: '12px',
+        border: '1px solid #e2e8f0'
+      }}>
+        <h4 style={{ marginBottom: '1rem', color: '#2d3748', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          📄 File Upload Guidelines
+        </h4>
+        <div style={{ fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.6' }}>
+          <p style={{ marginBottom: '0.75rem' }}>
+            <strong>Accepted formats:</strong> PDF, Word documents (.doc, .docx), Images (.jpg, .jpeg, .png), Text files (.txt)
+          </p>
+          <p style={{ marginBottom: '0.75rem' }}>
+            <strong>Maximum file size:</strong> 10MB per file
+          </p>
+          <p style={{ marginBottom: '0' }}>
+            <strong>Tips:</strong> Ensure documents are clear and readable. Scan documents at 300 DPI for best quality.
+          </p>
+        </div>
       </div>
     </div>
   );
