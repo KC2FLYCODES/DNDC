@@ -53,24 +53,41 @@ const AlertsTab = ({ api }) => {
 
   return (
     <div>
-      {alerts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-          No alerts available at this time.
-        </div>
-      ) : (
-        alerts.map(alert => (
-          <div key={alert.id} className="alert-card">
-            <div className="alert-title">{alert.title}</div>
-            <div style={{ marginBottom: '0.5rem' }}>{alert.message}</div>
-            <div className="alert-date">
-              {formatDate(alert.posted_date)}
-              {alert.deadline && (
-                <span> • Deadline: {new Date(alert.deadline).toLocaleDateString()}</span>
-              )}
-            </div>
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Community Alerts & Updates</h3>
+            <p className="card-subtitle">Stay informed about new opportunities and important deadlines</p>
           </div>
-        ))
-      )}
+        </div>
+        
+        {alerts.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📢</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              No alerts at this time
+            </div>
+            <div>Check back regularly for new opportunities and updates</div>
+          </div>
+        ) : (
+          <div style={{ marginBottom: '1rem', color: '#4a5568', fontWeight: '500' }}>
+            {alerts.length} active alert{alerts.length !== 1 ? 's' : ''}
+          </div>
+        )}
+      </div>
+      
+      {alerts.map(alert => (
+        <div key={alert.id} className="alert-card">
+          <div className="alert-title">{alert.title}</div>
+          <div className="alert-message">{alert.message}</div>
+          <div className="alert-date">
+            {formatDate(alert.posted_date)}
+            {alert.deadline && (
+              <span> • <strong>Deadline:</strong> {new Date(alert.deadline).toLocaleDateString()}</span>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
