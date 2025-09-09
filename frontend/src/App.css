@@ -1748,6 +1748,202 @@ body {
   }
 }
 
+/* Mobile App Specific Styles */
+.mobile-features-prompt {
+  padding: 2rem;
+}
+
+.app-download-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-download-banner h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.app-download-banner ul {
+  text-align: left;
+  max-width: 300px;
+  margin: 1.5rem auto;
+  list-style: none;
+  padding: 0;
+}
+
+.app-download-banner li {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.app-store-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.app-store-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.app-store-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.mobile-features {
+  padding: 2rem;
+}
+
+.mobile-features-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.mobile-features-header h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-feature-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.mobile-feature-section h4 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.image-preview {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 12px;
+}
+
+.image-preview h5 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.app-info {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.info-item strong {
+  color: #2d3748;
+}
+
+/* PWA Install Prompt */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.pwa-install-prompt button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Native App Indicators */
+.native-app-badge {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 1000;
+}
+
+/* Responsive Mobile Styles */
+@media (max-width: 480px) {
+  .app-store-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .app-store-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .camera-controls {
+    flex-direction: column;
+  }
+  
+  .camera-controls button {
+    width: 100%;
+  }
+  
+  .pwa-install-prompt {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .pwa-install-prompt button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
   .content {
     padding: 0.75rem;
