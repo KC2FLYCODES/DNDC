@@ -75,6 +75,8 @@ class Document(BaseModel):
     is_uploaded: bool = False
     uploaded_at: Optional[datetime] = None
     file_path: Optional[str] = None
+    original_filename: Optional[str] = None
+    file_size: Optional[int] = None
 
 class DocumentUpdate(BaseModel):
     is_uploaded: bool
