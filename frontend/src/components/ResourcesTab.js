@@ -70,52 +70,83 @@ const ResourcesTab = ({ api }) => {
 
   return (
     <div>
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="Search resources..."
-          className="search-input"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-      </div>
-      
-      <div className="category-grid">
-        {categories.map(category => (
-          <div
-            key={category.id}
-            className={`category-card ${selectedCategory === category.id ? 'active' : ''}`}
-            onClick={() => handleCategoryClick(category.id)}
-          >
-            <div className="category-icon">{category.icon}</div>
-            <div className="category-name">{category.name}</div>
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Community Resources</h3>
+            <p className="card-subtitle">Find housing assistance, utilities help, and community services</p>
           </div>
-        ))}
+        </div>
+        
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search resources by name or service..."
+            className="search-input"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+        
+        <div className="category-grid">
+          {categories.map(category => (
+            <div
+              key={category.id}
+              className={`category-card ${selectedCategory === category.id ? 'active' : ''}`}
+              onClick={() => handleCategoryClick(category.id)}
+            >
+              <div className="category-icon">{category.icon}</div>
+              <div className="category-name">{category.name}</div>
+            </div>
+          ))}
+        </div>
       </div>
       
       <div className="resource-list">
         {filteredResources.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-            No resources found matching your criteria.
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔍</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              No resources found
+            </div>
+            <div>Try adjusting your search terms or category filter</div>
           </div>
         ) : (
-          filteredResources.map(resource => (
-            <div key={resource.id} className="resource-item">
-              <div className="resource-name">{resource.name}</div>
-              <div className="resource-detail">{resource.description}</div>
-              {resource.eligibility && (
-                <div className="resource-detail">Eligibility: {resource.eligibility}</div>
-              )}
-              {resource.hours && (
-                <div className="resource-detail">{resource.hours}</div>
-              )}
-              {resource.phone && (
-                <a href={`tel:${resource.phone}`} className="resource-phone">
-                  📞 {resource.phone}
-                </a>
-              )}
+          <>
+            <div style={{ 
+              padding: '1rem 1.5rem', 
+              background: '#f7fafc', 
+              borderBottom: '1px solid #e2e8f0',
+              fontWeight: '600',
+              color: '#4a5568'
+            }}>
+              {filteredResources.length} resource{filteredResources.length !== 1 ? 's' : ''} found
+              {selectedCategory && ` in ${categories.find(c => c.id === selectedCategory)?.name}`}
             </div>
-          ))
+            {filteredResources.map(resource => (
+              <div key={resource.id} className="resource-item">
+                <div className="resource-name">{resource.name}</div>
+                <div className="resource-detail">{resource.description}</div>
+                {resource.eligibility && (
+                  <div className="resource-detail">
+                    <strong>Eligibility:</strong> {resource.eligibility}
+                  </div>
+                )}
+                {resource.hours && (
+                  <div className="resource-detail">
+                    <strong>Hours:</strong> {resource.hours}
+                  </div>
+                )}
+                {resource.phone && (
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <a href={`tel:${resource.phone}`} className="resource-phone">
+                      📞 {resource.phone}
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
         )}
       </div>
     </div>
