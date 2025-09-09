@@ -347,23 +347,247 @@ const AdminDashboard = ({ api, onLogout }) => {
   const renderResources = () => (
     <div>
       <div className="admin-header">
-        <h3>Resource Management</h3>
-        <p>Manage community resources and services</p>
+        <div>
+          <h3>Resource Management</h3>
+          <p>Manage community resources and services</p>
+        </div>
+        <div className="admin-actions">
+          <button 
+            className="btn-primary" 
+            onClick={() => setShowResourceForm(true)}
+          >
+            ➕ Add New Resource
+          </button>
+        </div>
       </div>
       
-      <div className="resources-admin-grid">
+      {showResourceForm && (
+        <div className="resource-form-modal">
+          <div className="resource-form-content">
+            <div className="resource-form-header">
+              <h4>{editingResource ? 'Edit Resource' : 'Add New Resource'}</h4>
+              <button 
+                className="close-btn" 
+                onClick={resetResourceForm}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: '#718096'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleResourceSubmit} className="resource-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Resource Name *</label>
+                  <input
+                    type="text"
+                    value={resourceForm.name}
+                    onChange={(e) => setResourceForm({...resourceForm, name: e.target.value})}
+                    placeholder="Enter resource name"
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Category *</label>
+                  <select
+                    value={resourceForm.category}
+                    onChange={(e) => setResourceForm({...resourceForm, category: e.target.value})}
+                    required
+                  >
+                    <option value="housing">Housing Help</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="food">Food Banks</option>
+                    <option value="health">Healthcare</option>
+                    <option value="education">Education</option>
+                    <option value="employment">Employment</option>
+                    <option value="legal">Legal Services</option>
+                    <option value="transportation">Transportation</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label>Description *</label>
+                <textarea
+                  value={resourceForm.description}
+                  onChange={(e) => setResourceForm({...resourceForm, description: e.target.value})}
+                  placeholder="Describe the resource and services offered"
+                  rows="3"
+                  required
+                />
+              </div>
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input
+                    type="tel"
+                    value={resourceForm.phone}
+                    onChange={(e) => setResourceForm({...resourceForm, phone: e.target.value})}
+                    placeholder="(434) 555-0123"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Hours of Operation</label>
+                  <input
+                    type="text"
+                    value={resourceForm.hours}
+                    onChange={(e) => setResourceForm({...resourceForm, hours: e.target.value})}
+                    placeholder="Mon-Fri 9am-5pm"
+                  />
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label>Address</label>
+                <input
+                  type="text"
+                  value={resourceForm.address}
+                  onChange={(e) => setResourceForm({...resourceForm, address: e.target.value})}
+                  placeholder="123 Main Street, City, State 12345"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Eligibility Requirements</label>
+                <input
+                  type="text"
+                  value={resourceForm.eligibility}
+                  onChange={(e) => setResourceForm({...resourceForm, eligibility: e.target.value})}
+                  placeholder="Income below 80% AMI, Must be Danville resident"
+                />
+              </div>
+              
+              <div className="form-actions">
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : (editingResource ? 'Update Resource' : 'Create Resource')}
+                </button>
+                <button type="button" className="btn-secondary" onClick={resetResourceForm}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <div className="resources-admin-list">
+        <div className="resources-admin-header">
+          <div className="resource-count">
+            {resources.length} resource{resources.length !== 1 ? 's' : ''} total
+          </div>
+          <div className="resource-filters">
+            <select 
+              onChange={(e) => {
+                // Filter resources by category
+                const category = e.target.value;
+                if (category === 'all') {
+                  fetchResources();
+                } else {
+                  const filtered = resources.filter(r => r.category === category);
+                  setResources(filtered);
+                }
+              }}
+              style={{
+                padding: '0.5rem',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                background: 'white'
+              }}
+            >
+              <option value="all">All Categories</option>
+              <option value="housing">Housing Help</option>
+              <option value="utilities">Utilities</option>
+              <option value="food">Food Banks</option>
+              <option value="health">Healthcare</option>
+              <option value="education">Education</option>
+              <option value="employment">Employment</option>
+              <option value="legal">Legal Services</option>
+              <option value="transportation">Transportation</option>
+            </select>
+          </div>
+        </div>
+        
         {resources.map(resource => (
           <div key={resource.id} className="resource-admin-card">
-            <h4>{resource.name}</h4>
-            <p>{resource.description}</p>
-            <div className="resource-admin-meta">
-              <span className="resource-category">{resource.category}</span>
-              {resource.phone && (
-                <span className="resource-phone">{resource.phone}</span>
-              )}
+            <div className="resource-admin-header">
+              <div className="resource-admin-info">
+                <h4>{resource.name}</h4>
+                <span className="resource-category-badge">{resource.category}</span>
+              </div>
+              <div className="resource-admin-actions">
+                <button 
+                  className="action-btn" 
+                  onClick={() => handleEditResource(resource)}
+                  title="Edit resource"
+                >
+                  ✏️ Edit
+                </button>
+                <button 
+                  className="action-btn danger" 
+                  onClick={() => handleDeleteResource(resource.id)}
+                  title="Delete resource"
+                >
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+            
+            <div className="resource-admin-content">
+              <p className="resource-description">{resource.description}</p>
+              
+              <div className="resource-admin-details">
+                {resource.phone && (
+                  <div className="resource-detail-item">
+                    <strong>📞 Phone:</strong> {resource.phone}
+                  </div>
+                )}
+                {resource.address && (
+                  <div className="resource-detail-item">
+                    <strong>📍 Address:</strong> {resource.address}
+                  </div>
+                )}
+                {resource.hours && (
+                  <div className="resource-detail-item">
+                    <strong>🕒 Hours:</strong> {resource.hours}
+                  </div>
+                )}
+                {resource.eligibility && (
+                  <div className="resource-detail-item">
+                    <strong>✅ Eligibility:</strong> {resource.eligibility}
+                  </div>
+                )}
+              </div>
+              
+              <div className="resource-admin-meta">
+                <span>Created: {new Date(resource.created_at).toLocaleDateString()}</span>
+              </div>
             </div>
           </div>
         ))}
+        
+        {resources.length === 0 && (
+          <div className="empty-state">
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📋</div>
+            <h4>No resources found</h4>
+            <p>Start by adding your first community resource</p>
+            <button 
+              className="btn-primary" 
+              onClick={() => setShowResourceForm(true)}
+              style={{ marginTop: '1rem' }}
+            >
+              ➕ Add First Resource
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
