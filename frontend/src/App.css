@@ -1,34 +1,323 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f5f5f5;
+  color: #333;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
+.resource-hub-header {
+  background: #2c3e50;
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.resource-hub-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.nav-tabs {
+  display: flex;
+  background: white;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  color: #666;
+  min-width: 100px;
+  transition: all 0.2s;
+}
+
+.tab-button.active {
+  color: #2c3e50;
+  border-bottom: 3px solid #3498db;
+  margin-bottom: -2px;
+  font-weight: 600;
+}
+
+.tab-button:hover {
+  background: #f8f9fa;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.search-box {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.category-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.category-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.category-name {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.resource-list {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.resource-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.resource-item:last-child {
+  border-bottom: none;
+}
+
+.resource-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.resource-detail {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.resource-phone {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.resource-phone:hover {
+  text-decoration: underline;
+}
+
+.alert-card {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.alert-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.alert-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.document-checklist {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-checkbox {
+  margin-right: 1rem;
+  width: 20px;
+  height: 20px;
+}
+
+.checklist-label {
+  flex: 1;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload-btn, .action-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover, .action-btn:hover {
+  background: #2980b9;
+}
+
+.action-btn.danger {
+  background: #e74c3c;
+}
+
+.action-btn.danger:hover {
+  background: #c0392b;
+}
+
+.action-btn.secondary {
+  background: #95a5a6;
+}
+
+.action-btn.secondary:hover {
+  background: #7f8c8d;
+}
+
+.file-info {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.contact-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.contact-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.contact-info {
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.message-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tab-button {
+    font-size: 0.85rem;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .file-actions {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-}
-
-.App-link {
-    color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    align-items: stretch;
+  }
+  
+  .file-actions .action-btn {
+    margin-bottom: 0.25rem;
+  }
 }
