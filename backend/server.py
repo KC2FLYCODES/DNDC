@@ -384,6 +384,224 @@ async def get_contact_info():
         "hours": "Monday - Friday: 9:00 AM - 5:00 PM"
     }
 
+# Phase 2 Endpoints - Application Status Tracker
+@api_router.post("/applications", response_model=Application)
+async def create_application(application_data: ApplicationCreate):
+    application_dict = application_data.dict()
+    
+    # Set initial required documents for Mission 180
+    if application_data.application_type == "mission_180":
+        application_dict["required_documents"] = [
+            "Photo ID", "Proof of Income", "Social Security Card", 
+            "Birth Certificates", "Landlord References", "Bank Statements"
+        ]
+    
+    application_obj = Application(**application_dict)
+    await db.applications.insert_one(application_obj.dict())
+    return application_obj
+
+@api_router.get("/applications", response_model=List[Application])
+async def get_applications(applicant_email: Optional[str] = None):
+    query = {}
+    if applicant_email:
+        query["applicant_email"] = applicant_email
+    
+    applications = await db.applications.find(query).sort("created_at", -1).to_list(1000)
+    return [Application(**app) for app in applications]
+
+@api_router.get("/applications/{application_id}", response_model=Application)
+async def get_application(application_id: str):
+    application = await db.applications.find_one({"id": application_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    return Application(**application)
+
+@api_router.put("/applications/{application_id}", response_model=Application)
+async def update_application(application_id: str, update_data: ApplicationUpdate):
+    update_dict = update_data.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.utcnow()
+    
+    # Auto-calculate progress based on status
+    if "status" in update_dict:
+        status_progress = {
+            "submitted": 25,
+            "under_review": 50,
+            "approved": 100,
+            "denied": 100
+        }
+        update_dict["progress_percentage"] = status_progress.get(update_dict["status"], 0)
+    
+    result = await db.applications.update_one(
+        {"id": application_id},
+        {"$set": update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    application = await db.applications.find_one({"id": application_id})
+    return Application(**application)
+
+@api_router.post("/applications/{application_id}/documents")
+async def link_document_to_application(application_id: str, document_name: str):
+    """Mark a document as completed for an application"""
+    application = await db.applications.find_one({"id": application_id})
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    completed_docs = application.get("completed_documents", [])
+    if document_name not in completed_docs:
+        completed_docs.append(document_name)
+        
+        # Calculate new progress based on document completion
+        required_docs = application.get("required_documents", [])
+        if required_docs:
+            doc_progress = (len(completed_docs) / len(required_docs)) * 50  # Documents worth 50% of progress
+            current_status_progress = {
+                "submitted": 25,
+                "under_review": 50,
+                "approved": 100,
+                "denied": 100
+            }.get(application.get("status", "submitted"), 25)
+            
+            new_progress = max(current_status_progress, doc_progress)
+            
+            await db.applications.update_one(
+                {"id": application_id},
+                {
+                    "$set": {
+                        "completed_documents": completed_docs,
+                        "progress_percentage": int(new_progress),
+                        "updated_at": datetime.utcnow()
+                    }
+                }
+            )
+    
+    return {"message": "Document linked successfully", "completed_documents": completed_docs}
+
+# Phase 2 Endpoints - Financial Calculator
+@api_router.post("/calculate/loan", response_model=LoanCalculation)
+async def calculate_loan(loan_amount: float, interest_rate: float, loan_term_years: int):
+    """Calculate Mission 180 loan payment"""
+    try:
+        # Convert annual rate to monthly and years to months
+        monthly_rate = interest_rate / 100 / 12
+        num_payments = loan_term_years * 12
+        
+        if monthly_rate == 0:
+            monthly_payment = loan_amount / num_payments
+        else:
+            monthly_payment = loan_amount * (monthly_rate * (1 + monthly_rate) ** num_payments) / ((1 + monthly_rate) ** num_payments - 1)
+        
+        total_cost = monthly_payment * num_payments
+        total_interest = total_cost - loan_amount
+        
+        calculation = LoanCalculation(
+            loan_amount=loan_amount,
+            interest_rate=interest_rate,
+            loan_term_years=loan_term_years,
+            monthly_payment=round(monthly_payment, 2),
+            total_interest=round(total_interest, 2),
+            total_cost=round(total_cost, 2)
+        )
+        
+        # Store calculation for analytics
+        await db.loan_calculations.insert_one(calculation.dict())
+        
+        return calculation
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Calculation error: {str(e)}")
+
+@api_router.post("/calculate/income-qualification", response_model=IncomeQualification)
+async def check_income_qualification(household_size: int, annual_income: float):
+    """Check income qualification for Mission 180"""
+    try:
+        # Danville, VA Area Median Income (AMI) - 2024 estimates
+        ami_by_household_size = {
+            1: 52800,
+            2: 60300,
+            3: 67850,
+            4: 75350,
+            5: 81400,
+            6: 87400,
+            7: 93450,
+            8: 99450
+        }
+        
+        area_median_income = ami_by_household_size.get(household_size, 99450)
+        
+        # Mission 180 typically serves 80% AMI and below
+        max_income_limit = area_median_income * 0.8
+        qualification_percentage = (annual_income / max_income_limit) * 100
+        qualifies = annual_income <= max_income_limit
+        
+        qualification = IncomeQualification(
+            household_size=household_size,
+            annual_income=annual_income,
+            area_median_income=area_median_income,
+            qualification_percentage=round(qualification_percentage, 1),
+            qualifies=qualifies,
+            max_income_limit=round(max_income_limit, 2)
+        )
+        
+        # Store calculation for analytics
+        await db.income_qualifications.insert_one(qualification.dict())
+        
+        return qualification
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Calculation error: {str(e)}")
+
+@api_router.post("/calculate/utility-assistance", response_model=UtilityAssistance)
+async def calculate_utility_assistance(household_size: int, monthly_income: float, utility_type: str, monthly_utility_cost: float):
+    """Calculate utility assistance eligibility"""
+    try:
+        # Federal Poverty Guidelines for utility assistance (150% FPL)
+        fpl_by_household_size = {
+            1: 1395,  # Monthly 150% FPL
+            2: 1875,
+            3: 2355,
+            4: 2835,
+            5: 3315,
+            6: 3795,
+            7: 4275,
+            8: 4755
+        }
+        
+        max_income_for_assistance = fpl_by_household_size.get(household_size, 4755)
+        
+        if monthly_income <= max_income_for_assistance:
+            # Calculate assistance based on utility burden
+            utility_burden = (monthly_utility_cost / monthly_income) * 100
+            
+            # Higher assistance for higher utility burden
+            if utility_burden > 10:  # High burden
+                assistance_percentage = 75
+            elif utility_burden > 6:  # Moderate burden
+                assistance_percentage = 50
+            else:  # Low burden
+                assistance_percentage = 25
+            
+            assistance_amount = monthly_utility_cost * (assistance_percentage / 100)
+        else:
+            assistance_amount = 0
+            assistance_percentage = 0
+        
+        assistance = UtilityAssistance(
+            household_size=household_size,
+            monthly_income=monthly_income,
+            utility_type=utility_type,
+            monthly_utility_cost=monthly_utility_cost,
+            assistance_amount=round(assistance_amount, 2),
+            assistance_percentage=assistance_percentage
+        )
+        
+        # Store calculation for analytics
+        await db.utility_assistance_calculations.insert_one(assistance.dict())
+        
+        return assistance
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Calculation error: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
