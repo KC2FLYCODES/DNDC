@@ -9,6 +9,7 @@ import FinancialCalculator from './FinancialCalculator';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
 import AnalyticsTracker from './AnalyticsTracker';
+import useCapacitor from '../hooks/useCapacitor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -23,6 +24,7 @@ const ResourceHub = () => {
   const [adminToken, setAdminToken] = useState(null);
   const dropdownRef = useRef(null);
   const [analytics] = useState(new AnalyticsTracker(API));
+  const { isNative, platform, scheduleNotification } = useCapacitor();
 
   const tabs = [
     { id: 'resources', label: 'Community Resources', icon: '🏘️' },
@@ -39,6 +41,19 @@ const ResourceHub = () => {
     // Track initial page view
     analytics.trackPageView('resources');
     
+    // Show native app welcome message
+    if (isNative) {
+      console.log(`DNDC Resource Hub running on ${platform}`);
+      
+      // Schedule a welcome notification (optional)
+      const welcomeDate = new Date(Date.now() + 5000); // 5 seconds from now
+      scheduleNotification(
+        'Welcome to DNDC Resource Hub!', 
+        'Access housing assistance, financial tools, and community resources anytime.',
+        welcomeDate
+      );
+    }
+    
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -49,7 +64,7 @@ const ResourceHub = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [analytics]);
+  }, [analytics, isNative, platform, scheduleNotification]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -58,6 +73,15 @@ const ResourceHub = () => {
     // Track page view
     analytics.trackPageView(tabId);
     analytics.trackButtonClick(`nav_${tabId}`, 'navigation');
+    
+    // Haptic feedback on native devices
+    if (isNative && window.Capacitor) {
+      import('@capacitor/haptics').then(({ Haptics, ImpactStyle }) => {
+        Haptics.impact({ style: ImpactStyle.Light });
+      }).catch(() => {
+        // Haptics not available
+      });
+    }
   };
 
   const handleAdminLogin = (user, token) => {
@@ -78,21 +102,23 @@ const ResourceHub = () => {
   };
 
   const renderTabContent = () => {
+    const commonProps = { api: API, analytics, isNative, platform };
+    
     switch (activeTab) {
       case 'resources':
-        return <ResourcesTab api={API} analytics={analytics} />;
+        return <ResourcesTab {...commonProps} />;
       case 'applications':
-        return <ApplicationTracker api={API} analytics={analytics} />;
+        return <ApplicationTracker {...commonProps} />;
       case 'calculator':
-        return <FinancialCalculator api={API} analytics={analytics} />;
+        return <FinancialCalculator {...commonProps} />;
       case 'documents':
-        return <DocumentsTab api={API} analytics={analytics} />;
+        return <DocumentsTab {...commonProps} />;
       case 'alerts':
-        return <AlertsTab api={API} analytics={analytics} />;
+        return <AlertsTab {...commonProps} />;
       case 'contact':
-        return <ContactTab api={API} analytics={analytics} />;
+        return <ContactTab {...commonProps} />;
       default:
-        return <ResourcesTab api={API} analytics={analytics} />;
+        return <ResourcesTab {...commonProps} />;
     }
   };
 
@@ -114,34 +140,39 @@ const ResourceHub = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg" 
               alt="DNDC Logo" 
+              loading="eager"
             />
           </div>
           <div className="header-text">
             <h1 className="resource-hub-title">DNDC Resource Hub</h1>
             <div className="subtitle">Danville Neighborhood Development Corporation</div>
-            <div className="powered-by">Powered by Community Development Technology Platform</div>
+            <div className="powered-by">
+              {isNative ? `Native App • ${platform}` : 'Community Development Technology Platform'}
+            </div>
           </div>
-          <button 
-            className="admin-access-btn"
-            onClick={() => setShowAdminLogin(true)}
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'rgba(255,255,255,0.2)',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.3)',
-              padding: '0.5rem 1rem',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
-            onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
-          >
-            🛠️ Admin
-          </button>
+          {!isNative && (
+            <button 
+              className="admin-access-btn"
+              onClick={() => setShowAdminLogin(true)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.3)',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+              onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+            >
+              🛠️ Admin
+            </button>
+          )}
         </div>
       </header>
       
@@ -206,6 +237,11 @@ const ResourceHub = () => {
           <div className="footer-tagline">
             Empowering Communities • Building Futures • Creating Opportunities
           </div>
+          {isNative && (
+            <div style={{ fontSize: '0.75rem', opacity: '0.7', marginTop: '0.5rem' }}>
+              📱 Native App Version {platform}
+            </div>
+          )}
         </div>
       </footer>
     </div>
