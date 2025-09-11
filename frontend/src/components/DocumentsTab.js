@@ -162,151 +162,356 @@ const DocumentsTab = ({ api }) => {
   }
 
   return (
-    <div className="document-checklist">
-      <div className="card-header">
-        <div>
-          <h3 className="card-title">Housing Application Checklist</h3>
-          <p className="card-subtitle">Upload your required documents to complete your Mission 180 application</p>
+    <div>
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Housing Application Checklist</h3>
+            <p className="card-subtitle">Upload your required documents to complete your Mission 180 application</p>
+          </div>
         </div>
-      </div>
-      
-      {error && <div className="error">{error}</div>}
-      
-      <div style={{ 
-        background: '#f7fafc', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e2e8f0'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '1.2rem' }}>📋</span>
-          <strong style={{ color: '#2d3748' }}>
-            Progress: {documents.filter(d => d.is_uploaded).length} of {documents.length} documents completed
-          </strong>
-        </div>
+        
+        {error && <div className="error">{error}</div>}
+        
         <div style={{ 
-          width: '100%', 
-          height: '8px', 
-          background: '#e2e8f0', 
-          borderRadius: '4px', 
-          overflow: 'hidden' 
+          background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)', 
+          padding: '1.5rem', 
+          borderRadius: '12px', 
+          marginBottom: '1.5rem',
+          border: '1px solid #e2e8f0'
         }}>
-          <div 
-            style={{ 
-              height: '100%', 
-              background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-              width: `${documents.length > 0 ? (documents.filter(d => d.is_uploaded).length / documents.length) * 100 : 0}%`,
-              transition: 'width 0.5s ease'
-            }}
-          />
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '1rem' 
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem'
+              }}>
+                📋
+              </div>
+              <div>
+                <div style={{ 
+                  fontSize: '1.1rem', 
+                  fontWeight: '600', 
+                  color: '#2d3748',
+                  marginBottom: '0.25rem'
+                }}>
+                  Document Progress
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#718096' }}>
+                  {documents.filter(d => d.is_uploaded).length} of {documents.length} completed
+                </div>
+              </div>
+            </div>
+            <div style={{ 
+              background: 'white',
+              borderRadius: '8px',
+              padding: '0.5rem 1rem',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              fontSize: '1.1rem',
+              fontWeight: '700',
+              color: documents.length > 0 && documents.filter(d => d.is_uploaded).length === documents.length 
+                ? '#27ae60' : '#3498db'
+            }}>
+              {documents.length > 0 ? Math.round((documents.filter(d => d.is_uploaded).length / documents.length) * 100) : 0}%
+            </div>
+          </div>
+          <div style={{ 
+            width: '100%', 
+            height: '8px', 
+            background: '#e2e8f0', 
+            borderRadius: '4px', 
+            overflow: 'hidden' 
+          }}>
+            <div 
+              style={{ 
+                height: '100%', 
+                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                width: `${documents.length > 0 ? (documents.filter(d => d.is_uploaded).length / documents.length) * 100 : 0}%`,
+                transition: 'width 0.5s ease'
+              }}
+            />
+          </div>
         </div>
       </div>
       
-      {documents.map(document => (
-        <div key={document.id} className="checklist-item">
-          <input
-            type="checkbox"
-            className="checklist-checkbox"
-            checked={document.is_uploaded}
-            readOnly
-          />
-          <div className="checklist-label">
-            <div style={{ fontWeight: '600', color: '#2d3748' }}>{document.name}</div>
-            <div style={{ fontSize: '0.9rem', color: '#718096', marginTop: '0.25rem' }}>
-              {document.description}
-            </div>
+      <div className="document-checklist">
+        {documents.map((document, index) => (
+          <div key={document.id} className="checklist-item" style={{
+            background: 'white',
+            border: '1px solid #e2e8f0',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            marginBottom: '1rem',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
+            transition: 'all 0.2s ease',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
             {document.is_uploaded && (
-              <div className="file-info">
-                ✅ Uploaded: {formatDate(document.uploaded_at)} 
-                {document.original_filename && ` • ${document.original_filename}`}
-                {document.file_size && ` • ${formatFileSize(document.file_size)}`}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '4px',
+                height: '100%',
+                background: 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
+              }} />
+            )}
+            
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+              <div style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                background: document.is_uploaded 
+                  ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)' 
+                  : '#e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                color: 'white',
+                flexShrink: 0,
+                marginTop: '2px'
+              }}>
+                {document.is_uploaded ? '✓' : index + 1}
               </div>
-            )}
+              
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ 
+                  fontWeight: '600', 
+                  color: '#2d3748',
+                  fontSize: '1.1rem',
+                  marginBottom: '0.5rem'
+                }}>
+                  {document.name}
+                </div>
+                <div style={{ 
+                  fontSize: '0.95rem', 
+                  color: '#718096', 
+                  lineHeight: '1.5',
+                  marginBottom: document.is_uploaded ? '0.75rem' : '1rem'
+                }}>
+                  {document.description}
+                </div>
+                
+                {document.is_uploaded && (
+                  <div style={{
+                    background: '#f0fff4',
+                    border: '1px solid #c6f6d5',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
+                    fontSize: '0.9rem',
+                    color: '#2f855a',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                      <span>✅</span>
+                      <strong>Uploaded successfully</strong>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+                      {formatDate(document.uploaded_at)}
+                      {document.original_filename && ` • ${document.original_filename}`}
+                      {document.file_size && ` • ${formatFileSize(document.file_size)}`}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              gap: '0.5rem', 
+              flexWrap: 'wrap',
+              marginTop: '1rem',
+              marginLeft: '40px'
+            }}>
+              {!document.is_uploaded ? (
+                <>
+                  <input
+                    type="file"
+                    id={`upload-${document.id}`}
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileInputChange(document.id, e)}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                  />
+                  <button
+                    style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.75rem 1.5rem',
+                      fontSize: '0.9rem',
+                      fontWeight: '600',
+                      cursor: uploadingId === document.id ? 'not-allowed' : 'pointer',
+                      opacity: uploadingId === document.id ? 0.7 : 1,
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                    onClick={() => document.getElementById(`upload-${document.id}`).click()}
+                    disabled={uploadingId === document.id}
+                    onMouseOver={(e) => {
+                      if (uploadingId !== document.id) {
+                        e.target.style.transform = 'translateY(-1px)';
+                        e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  >
+                    {uploadingId === document.id ? (
+                      <>⏳ Uploading...</>
+                    ) : (
+                      <>📁 Upload File</>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="action-btn"
+                    onClick={() => handleFileView(document.id)}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    👁️ View
+                  </button>
+                  <input
+                    type="file"
+                    id={`replace-${document.id}`}
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileInputChange(document.id, e, true)}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                  />
+                  <button
+                    className="action-btn secondary"
+                    onClick={() => document.getElementById(`replace-${document.id}`).click()}
+                    disabled={uploadingId === document.id}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.85rem',
+                      cursor: uploadingId === document.id ? 'not-allowed' : 'pointer',
+                      opacity: uploadingId === document.id ? 0.7 : 1,
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    {uploadingId === document.id ? '⏳ Replacing...' : '🔄 Replace'}
+                  </button>
+                  <button
+                    className="action-btn"
+                    onClick={() => window.open(`${api}/documents/${document.id}/download`, '_blank')}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    💾 Download
+                  </button>
+                  <button
+                    className="action-btn danger"
+                    onClick={() => handleFileDelete(document.id)}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #fee2e2',
+                      color: '#dc2626',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.background = '#fef2f2';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.background = 'white';
+                    }}
+                  >
+                    🗑️ Delete
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-          
-          <div className="file-actions">
-            {!document.is_uploaded ? (
-              <>
-                <input
-                  type="file"
-                  id={`upload-${document.id}`}
-                  style={{ display: 'none' }}
-                  onChange={(e) => handleFileInputChange(document.id, e)}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                />
-                <button
-                  className="upload-btn"
-                  onClick={() => document.getElementById(`upload-${document.id}`).click()}
-                  disabled={uploadingId === document.id}
-                >
-                  {uploadingId === document.id ? 'Uploading...' : '📁 Upload'}
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  className="action-btn"
-                  onClick={() => handleFileView(document.id)}
-                  title="View file details"
-                >
-                  👁️ View
-                </button>
-                <input
-                  type="file"
-                  id={`replace-${document.id}`}
-                  style={{ display: 'none' }}
-                  onChange={(e) => handleFileInputChange(document.id, e, true)}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                />
-                <button
-                  className="action-btn secondary"
-                  onClick={() => document.getElementById(`replace-${document.id}`).click()}
-                  disabled={uploadingId === document.id}
-                  title="Replace with new file"
-                >
-                  {uploadingId === document.id ? 'Replacing...' : '🔄 Replace'}
-                </button>
-                <button
-                  className="action-btn"
-                  onClick={() => window.open(`${api}/documents/${document.id}/download`, '_blank')}
-                  title="Download file"
-                >
-                  💾 Download
-                </button>
-                <button
-                  className="action-btn danger"
-                  onClick={() => handleFileDelete(document.id)}
-                  title="Delete file"
-                >
-                  🗑️ Delete
-                </button>
-              </>
-            )}
+        ))}
+        
+        <div style={{ 
+          marginTop: '2rem', 
+          padding: '1.5rem', 
+          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <h4 style={{ 
+            marginBottom: '1rem', 
+            color: '#2d3748', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem',
+            fontSize: '1.1rem',
+            fontWeight: '600'
+          }}>
+            📄 File Upload Guidelines
+          </h4>
+          <div style={{ fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.6' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              <div>
+                <strong style={{ color: '#2d3748' }}>Accepted formats:</strong>
+                <div style={{ marginTop: '0.25rem' }}>PDF, Word (.doc, .docx), Images (.jpg, .png), Text files</div>
+              </div>
+              <div>
+                <strong style={{ color: '#2d3748' }}>Maximum file size:</strong>
+                <div style={{ marginTop: '0.25rem' }}>10MB per file</div>
+              </div>
+              <div>
+                <strong style={{ color: '#2d3748' }}>Best practices:</strong>
+                <div style={{ marginTop: '0.25rem' }}>Ensure documents are clear and scan at 300 DPI</div>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
-      
-      <div style={{ 
-        marginTop: '2rem', 
-        padding: '1.5rem', 
-        background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)', 
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0'
-      }}>
-        <h4 style={{ marginBottom: '1rem', color: '#2d3748', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          📄 File Upload Guidelines
-        </h4>
-        <div style={{ fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.6' }}>
-          <p style={{ marginBottom: '0.75rem' }}>
-            <strong>Accepted formats:</strong> PDF, Word documents (.doc, .docx), Images (.jpg, .jpeg, .png), Text files (.txt)
-          </p>
-          <p style={{ marginBottom: '0.75rem' }}>
-            <strong>Maximum file size:</strong> 10MB per file
-          </p>
-          <p style={{ marginBottom: '0' }}>
-            <strong>Tips:</strong> Ensure documents are clear and readable. Scan documents at 300 DPI for best quality.
-          </p>
         </div>
       </div>
     </div>
