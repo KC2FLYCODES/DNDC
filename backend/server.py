@@ -1212,3 +1212,15 @@ async def get_dndc_analytics():
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+# Include the API router
+app.include_router(api_router)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure appropriately for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
