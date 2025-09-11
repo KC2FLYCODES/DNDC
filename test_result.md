@@ -115,7 +115,7 @@ backend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Successfully updated backend .env with real Supabase API keys"
+        comment: "✅ API keys configured and verified working"
       
   - task: "Supabase Database Schema"
     implemented: true
