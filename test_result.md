@@ -131,15 +131,18 @@ backend:
 
   - task: "Supabase Integration Service"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/supabase_service.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Service layer ready. Test confirmed: organizations(1), users(1), all other tables accessible. Multi-tenant architecture functioning."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Supabase service layer exists and works (✅ connection, ✅ DNDC org found, ✅ all tables accessible) BUT it's NOT integrated into the main FastAPI server. The server.py still uses MongoDB exclusively. No Supabase endpoints exist in the API. This is a partial implementation - service layer ready but not connected to API endpoints."
 
 frontend:
   - task: "Supabase Client Configuration"
