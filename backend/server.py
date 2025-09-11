@@ -1028,6 +1028,187 @@ async def startup_db():
         ]
         await db.applications.insert_many(sample_applications)
 
+# ================================
+# SUPABASE MULTI-TENANT ENDPOINTS
+# ================================
+
+@api_router.get("/supabase/status")
+async def supabase_status():
+    """Check Supabase connection and configuration"""
+    try:
+        # Test basic Supabase connection
+        client = get_supabase_client(service_role=True)
+        
+        # Test DNDC organization
+        result = client.table('organizations').select('*').eq('id', DNDC_ORG_ID).execute()
+        
+        if result.data:
+            org = result.data[0]
+            return {
+                "status": "connected",
+                "supabase_url": os.environ.get('SUPABASE_URL', 'Not configured'),
+                "dndc_organization": {
+                    "id": org.get('id'),
+                    "name": org.get('name'),
+                    "slug": org.get('slug')
+                },
+                "tables_accessible": True
+            }
+        else:
+            return {"status": "error", "message": "DNDC organization not found"}
+            
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@api_router.get("/organizations/{org_id}")
+async def get_organization(org_id: str):
+    """Get organization details"""
+    try:
+        service = get_supabase_service(org_id)
+        org = await service.get_organization(org_id)
+        if org:
+            return org.dict()
+        else:
+            raise HTTPException(status_code=404, detail="Organization not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/resources", response_model=List[dict])
+async def get_organization_resources(
+    org_id: str,
+    category: Optional[str] = None,
+    search: Optional[str] = None
+):
+    """Get resources for a specific organization (multi-tenant)"""
+    try:
+        service = get_supabase_service(org_id)
+        resources = await service.get_resources(category=category, search=search)
+        return [resource.dict() for resource in resources]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/organizations/{org_id}/resources")
+async def create_organization_resource(
+    org_id: str,
+    resource_data: MultiTenantResourceCreate
+):
+    """Create a new resource for an organization"""
+    try:
+        service = get_supabase_service(org_id)
+        resource = await service.create_resource(resource_data)
+        if resource:
+            return resource.dict()
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create resource")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/applications", response_model=List[dict])
+async def get_organization_applications(org_id: str):
+    """Get applications for a specific organization"""
+    try:
+        service = get_supabase_service(org_id)
+        applications = await service.get_applications()
+        return [app.dict() for app in applications]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/organizations/{org_id}/applications")
+async def create_organization_application(
+    org_id: str,
+    app_data: MultiTenantApplicationCreate
+):
+    """Create a new application for an organization"""
+    try:
+        service = get_supabase_service(org_id)
+        application = await service.create_application(app_data)
+        if application:
+            return application.dict()
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create application")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/organizations/{org_id}/applications/{app_id}/status")
+async def update_application_status(
+    org_id: str,
+    app_id: str,
+    status: str,
+    notes: Optional[str] = ""
+):
+    """Update application status"""
+    try:
+        service = get_supabase_service(org_id)
+        success = await service.update_application_status(app_id, status, notes)
+        if success:
+            return {"message": "Application status updated successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to update application status")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/alerts", response_model=List[dict])
+async def get_organization_alerts(org_id: str, active_only: bool = True):
+    """Get alerts for a specific organization"""
+    try:
+        service = get_supabase_service(org_id)
+        alerts = await service.get_alerts(active_only=active_only)
+        return [alert.dict() for alert in alerts]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/organizations/{org_id}/alerts")
+async def create_organization_alert(
+    org_id: str,
+    alert_data: MultiTenantAlertCreate
+):
+    """Create a new alert for an organization"""
+    try:
+        service = get_supabase_service(org_id)
+        alert = await service.create_alert(alert_data)
+        if alert:
+            return alert.dict()
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create alert")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/analytics")
+async def get_organization_analytics(org_id: str):
+    """Get analytics dashboard for an organization"""
+    try:
+        service = get_supabase_service(org_id)
+        analytics = await service.get_analytics_dashboard()
+        return analytics
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Convenience endpoints for DNDC (default organization)
+@api_router.get("/dndc/resources", response_model=List[dict])
+async def get_dndc_resources(category: Optional[str] = None, search: Optional[str] = None):
+    """Get DNDC resources (convenience endpoint)"""
+    return await get_organization_resources(DNDC_ORG_ID, category, search)
+
+@api_router.post("/dndc/resources")
+async def create_dndc_resource(resource_data: MultiTenantResourceCreate):
+    """Create DNDC resource (convenience endpoint)"""
+    return await create_organization_resource(DNDC_ORG_ID, resource_data)
+
+@api_router.get("/dndc/applications")
+async def get_dndc_applications():
+    """Get DNDC applications (convenience endpoint)"""
+    return await get_organization_applications(DNDC_ORG_ID)
+
+@api_router.get("/dndc/alerts")
+async def get_dndc_alerts(active_only: bool = True):
+    """Get DNDC alerts (convenience endpoint)"""
+    return await get_organization_alerts(DNDC_ORG_ID, active_only)
+
+@api_router.get("/dndc/analytics")
+async def get_dndc_analytics():
+    """Get DNDC analytics (convenience endpoint)"""
+    return await get_organization_analytics(DNDC_ORG_ID)
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
