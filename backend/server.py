@@ -23,6 +23,23 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Supabase configuration
+DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280"  # DNDC organization ID
+
+# Helper function to get organization context
+async def get_organization_context(x_organization_id: Optional[str] = Header(None)):
+    """
+    Get organization context from header or default to DNDC
+    This allows for multi-tenant requests
+    """
+    org_id = x_organization_id or DNDC_ORG_ID
+    return org_id
+
+# Helper function to get Supabase service
+def get_supabase_service(organization_id: str) -> SupabaseService:
+    """Get SupabaseService instance for the organization"""
+    return SupabaseService(organization_id=organization_id)
+
 # Create the main app without a prefix
 app = FastAPI()
 
