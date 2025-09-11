@@ -7,10 +7,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class SupabaseService:
-    def __init__(self, organization_id: str, user_token: Optional[str] = None):
+    def __init__(self, organization_id: str, user_token: Optional[str] = None, use_service_role: bool = True):
         self.organization_id = organization_id
-        self.supabase = get_supabase_client(service_role=False)
-        if user_token:
+        self.supabase = get_supabase_client(service_role=use_service_role)
+        if user_token and not use_service_role:
             self.supabase.auth.set_session(user_token)
     
     # Organization management
