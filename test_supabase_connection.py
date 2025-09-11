@@ -50,6 +50,13 @@ def test_connection():
 def apply_sql_schema(client):
     """Apply the SQL schema step by step"""
     
+    print(f"\n🏗️ SQL Schema needs to be applied manually in Supabase SQL Editor...")
+    print(f"\n📋 Please follow these steps:")
+    print(f"1. Go to your Supabase project: {SUPABASE_URL}")
+    print(f"2. Click on 'SQL Editor' in the left sidebar")
+    print(f"3. Click '+ New query'")
+    print(f"4. Copy and paste the following SQL commands ONE BY ONE:\n")
+    
     # SQL commands broken down into steps
     sql_steps = [
         # Step 1: Enable extensions
@@ -61,102 +68,129 @@ def apply_sql_schema(client):
         # Step 2: Create organizations table
         {
             "name": "Create organizations table",
-            "sql": """
-            CREATE TABLE IF NOT EXISTS organizations (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                name VARCHAR(255) NOT NULL,
-                slug VARCHAR(100) UNIQUE NOT NULL,
-                domain VARCHAR(255),
-                settings JSONB DEFAULT '{}',
-                logo_url TEXT,
-                contact_info JSONB DEFAULT '{}',
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                is_active BOOLEAN DEFAULT TRUE
-            );
-            """
+            "sql": """CREATE TABLE IF NOT EXISTS organizations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    domain VARCHAR(255),
+    settings JSONB DEFAULT '{}',
+    logo_url TEXT,
+    contact_info JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT TRUE
+);"""
         },
         
         # Step 3: Create users table
         {
             "name": "Create users table",
-            "sql": """
-            CREATE TABLE IF NOT EXISTS users (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                role VARCHAR(50) DEFAULT 'resident',
-                profile JSONB DEFAULT '{}',
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                is_active BOOLEAN DEFAULT TRUE
-            );
-            """
+            "sql": """CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    role VARCHAR(50) DEFAULT 'resident',
+    profile JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT TRUE
+);"""
         },
         
         # Step 4: Create resources table
         {
             "name": "Create resources table",
-            "sql": """
-            CREATE TABLE IF NOT EXISTS resources (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-                name VARCHAR(255) NOT NULL,
-                description TEXT,
-                category VARCHAR(100) NOT NULL,
-                phone VARCHAR(50),
-                address TEXT,
-                hours VARCHAR(255),
-                eligibility TEXT,
-                created_by UUID REFERENCES users(id),
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-                is_active BOOLEAN DEFAULT TRUE
-            );
-            """
+            "sql": """CREATE TABLE IF NOT EXISTS resources (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100) NOT NULL,
+    phone VARCHAR(50),
+    address TEXT,
+    hours VARCHAR(255),
+    eligibility TEXT,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT TRUE
+);"""
         },
         
-        # Step 5: Enable RLS for organizations
+        # Step 5: Create remaining tables
         {
-            "name": "Enable RLS for organizations",
-            "sql": "ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;"
+            "name": "Create applications table",
+            "sql": """CREATE TABLE IF NOT EXISTS applications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    applicant_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    applicant_name VARCHAR(255) NOT NULL,
+    applicant_email VARCHAR(255),
+    applicant_phone VARCHAR(50),
+    application_type VARCHAR(100) DEFAULT 'mission_180',
+    status VARCHAR(50) DEFAULT 'submitted',
+    progress_percentage INTEGER DEFAULT 0,
+    notes TEXT,
+    estimated_completion TIMESTAMP WITH TIME ZONE,
+    required_documents JSONB DEFAULT '[]',
+    completed_documents JSONB DEFAULT '[]',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);"""
         },
         
-        # Step 6: Enable RLS for users
+        # Step 6: Enable RLS
         {
-            "name": "Enable RLS for users", 
-            "sql": "ALTER TABLE users ENABLE ROW LEVEL SECURITY;"
+            "name": "Enable Row Level Security",
+            "sql": """ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE applications ENABLE ROW LEVEL SECURITY;"""
         },
         
-        # Step 7: Enable RLS for resources
+        # Step 7: Create RLS policies
         {
-            "name": "Enable RLS for resources",
-            "sql": "ALTER TABLE resources ENABLE ROW LEVEL SECURITY;"
+            "name": "Create RLS Policies",
+            "sql": """-- RLS Policies for Organizations
+CREATE POLICY "Organizations can view their own data" ON organizations
+    FOR ALL USING (
+        auth.jwt() ->> 'organization_id' = id::text
+        OR auth.jwt() ->> 'role' = 'super_admin'
+    );
+
+-- RLS Policies for Users
+CREATE POLICY "Users can view users in their organization" ON users
+    FOR ALL USING (
+        organization_id::text = auth.jwt() ->> 'organization_id'
+        OR auth.jwt() ->> 'role' = 'super_admin'
+    );
+
+-- RLS Policies for Resources
+CREATE POLICY "Users can view resources in their organization" ON resources
+    FOR ALL USING (
+        organization_id::text = auth.jwt() ->> 'organization_id'
+        OR auth.jwt() ->> 'role' = 'super_admin'
+    );
+
+-- RLS Policies for Applications
+CREATE POLICY "Users can view applications in their organization" ON applications
+    FOR ALL USING (
+        organization_id::text = auth.jwt() ->> 'organization_id'
+        OR auth.jwt() ->> 'role' = 'super_admin'
+    );"""
         }
     ]
     
-    print(f"\n🏗️ Applying SQL Schema ({len(sql_steps)} steps)...")
-    
     for i, step in enumerate(sql_steps, 1):
-        try:
-            print(f"\nStep {i}/{len(sql_steps)}: {step['name']}")
-            result = client.rpc('execute_sql', {'sql': step['sql']}).execute()
-            print(f"✅ Step {i} completed successfully")
-            
-        except Exception as e:
-            print(f"❌ Step {i} failed: {e}")
-            
-            # Try alternative method using direct SQL execution
-            try:
-                print(f"🔄 Trying alternative method for step {i}...")
-                # For some operations, we might need to use the SQL editor directly
-                print(f"Manual SQL needed:\n{step['sql']}")
-                print("Please execute this SQL manually in your Supabase SQL editor.")
-                
-            except Exception as e2:
-                print(f"❌ Alternative method also failed: {e2}")
-                return False
+        print(f"\n--- STEP {i}: {step['name']} ---")
+        print(step['sql'])
+        print(f"--- END STEP {i} ---\n")
     
+    print(f"5. After running each step, click 'RUN' to execute")
+    print(f"6. Check for any errors in the output panel")
+    print(f"7. Once all steps are complete, return here and press Enter to continue")
+    
+    input("\nPress Enter when you've completed the SQL setup in Supabase...")
     return True
 
 def test_table_creation(client):
