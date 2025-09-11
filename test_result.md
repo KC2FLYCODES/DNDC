@@ -201,7 +201,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Supabase Multi-tenant Endpoints Testing"
+    - "Frontend Supabase Client Integration"
+    - "End-to-End Multi-Tenant Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
