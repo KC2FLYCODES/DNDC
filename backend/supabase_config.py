@@ -1,6 +1,12 @@
 import os
 from supabase import create_client, Client
 from typing import Optional
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
 
 # Supabase Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://your-project.supabase.co')
