@@ -127,7 +127,7 @@ backend:
     status_history:
       - working: true
         agent: "main"
-        comment: "All 7 tables created successfully. DNDC organization and admin user created. Schema exposed properly after user manually configured public schema access."
+        comment: "✅ All 7 tables created, DNDC org setup, public schema exposed"
 
   - task: "Supabase Integration Service"
     implemented: true
