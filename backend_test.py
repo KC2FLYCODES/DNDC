@@ -587,20 +587,20 @@ class DNDCAPITester:
 
     def run_all_tests(self):
         """Run all API tests including Supabase integration"""
-        print("🚀 Starting DNDC Resource Hub API Tests - Supabase Integration Focus")
+        print("🚀 Starting DNDC Resource Hub API Tests - Supabase Multi-tenant Integration Focus")
         print(f"Testing against: {self.base_url}")
         
         try:
             # Test backend health first
             self.test_backend_health_and_status()
             
-            # Test Supabase integration
-            self.test_supabase_integration()
-            
-            # Test for Supabase-specific endpoints
+            # PRIORITY: Test new Supabase multi-tenant endpoints
             self.test_supabase_endpoints()
             
-            # Run existing tests
+            # Test Supabase integration layer
+            self.test_supabase_integration()
+            
+            # Run existing MongoDB tests to ensure compatibility
             self.test_basic_endpoints()
             self.test_resources_endpoints()
             self.test_documents_endpoints()
