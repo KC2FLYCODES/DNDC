@@ -187,3 +187,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "🎉 SUPABASE SETUP COMPLETE! All tables working, DNDC org created (ID: 97fef08b-4fde-484d-b334-4b9450f9a280), admin user ready. Public schema exposed successfully. Ready to integrate backend API endpoints and test full application functionality."
+  - agent: "testing"
+    message: "🔍 SUPABASE INTEGRATION TEST RESULTS: ✅ Service layer works perfectly (connection, DNDC org found, all tables accessible). ❌ CRITICAL ISSUE: FastAPI server NOT using Supabase - still MongoDB only. Need to integrate SupabaseService into server.py endpoints or create new Supabase-specific endpoints. Current MongoDB API: 84.8% success rate (36/42 tests passed)."
