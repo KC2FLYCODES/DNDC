@@ -178,8 +178,9 @@ metadata:
 test_plan:
   current_focus:
     - "Backend API Integration with Supabase"
-    - "Frontend Supabase Client Testing"
-  stuck_tasks: []
+    - "Supabase Integration Service"
+  stuck_tasks:
+    - "Backend API Integration with Supabase"
   test_all: false
   test_priority: "high_first"
 
