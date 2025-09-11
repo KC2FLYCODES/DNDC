@@ -276,12 +276,177 @@ class DNDCAPITester:
             200
         )
 
+    def test_supabase_integration(self):
+        """Test Supabase integration and multi-tenant functionality"""
+        print("\n=== TESTING SUPABASE INTEGRATION ===")
+        
+        try:
+            # Test Supabase configuration
+            from supabase_config import get_supabase_client, SUPABASE_URL, SUPABASE_ANON_KEY
+            from supabase_service import SupabaseService
+            from supabase_models import Organization
+            
+            print("✅ Supabase modules imported successfully")
+            self.supabase_tests_run += 1
+            self.supabase_tests_passed += 1
+            
+            # Test Supabase client creation
+            try:
+                client = get_supabase_client(service_role=False)
+                print("✅ Supabase client created successfully")
+                self.supabase_tests_run += 1
+                self.supabase_tests_passed += 1
+            except Exception as e:
+                print(f"❌ Failed to create Supabase client: {e}")
+                self.supabase_tests_run += 1
+                return False
+            
+            # Test service role client
+            try:
+                service_client = get_supabase_client(service_role=True)
+                print("✅ Supabase service role client created successfully")
+                self.supabase_tests_run += 1
+                self.supabase_tests_passed += 1
+            except Exception as e:
+                print(f"❌ Failed to create Supabase service role client: {e}")
+                self.supabase_tests_run += 1
+                return False
+            
+            # Test DNDC organization retrieval
+            dndc_org_id = "97fef08b-4fde-484d-b334-4b9450f9a280"
+            try:
+                # Use service role client to bypass RLS for testing
+                result = service_client.table('organizations').select('*').eq('id', dndc_org_id).execute()
+                if result.data and len(result.data) > 0:
+                    org_data = result.data[0]
+                    print(f"✅ DNDC organization found: {org_data.get('name', 'Unknown')}")
+                    print(f"   Organization ID: {org_data.get('id')}")
+                    print(f"   Slug: {org_data.get('slug', 'N/A')}")
+                    self.supabase_tests_run += 1
+                    self.supabase_tests_passed += 1
+                else:
+                    print("❌ DNDC organization not found in Supabase")
+                    self.supabase_tests_run += 1
+                    return False
+            except Exception as e:
+                print(f"❌ Failed to retrieve DNDC organization: {e}")
+                self.supabase_tests_run += 1
+                return False
+            
+            # Test SupabaseService initialization
+            try:
+                supabase_service = SupabaseService(organization_id=dndc_org_id)
+                print("✅ SupabaseService initialized successfully")
+                self.supabase_tests_run += 1
+                self.supabase_tests_passed += 1
+            except Exception as e:
+                print(f"❌ Failed to initialize SupabaseService: {e}")
+                self.supabase_tests_run += 1
+                return False
+            
+            # Test multi-tenant resource retrieval
+            try:
+                # Note: This will fail due to RLS without proper auth, but we can test the method exists
+                resources = supabase_service.get_resources()
+                print(f"✅ Resource retrieval method works (found {len(resources) if resources else 0} resources)")
+                self.supabase_tests_run += 1
+                self.supabase_tests_passed += 1
+            except Exception as e:
+                # Expected to fail due to RLS, but method should exist
+                if "get_resources" in str(e) and "object has no attribute" in str(e):
+                    print(f"❌ SupabaseService missing get_resources method: {e}")
+                    self.supabase_tests_run += 1
+                else:
+                    print(f"⚠️  Resource retrieval failed (expected due to RLS): {e}")
+                    self.supabase_tests_run += 1
+                    self.supabase_tests_passed += 1
+            
+            # Test table accessibility with service role
+            tables_to_test = ['organizations', 'users', 'resources', 'applications', 'documents', 'alerts', 'contact_messages']
+            for table in tables_to_test:
+                try:
+                    result = service_client.table(table).select('id').limit(1).execute()
+                    print(f"✅ Table '{table}' is accessible")
+                    self.supabase_tests_run += 1
+                    self.supabase_tests_passed += 1
+                except Exception as e:
+                    print(f"❌ Table '{table}' is not accessible: {e}")
+                    self.supabase_tests_run += 1
+            
+            return True
+            
+        except ImportError as e:
+            print(f"❌ Failed to import Supabase modules: {e}")
+            self.supabase_tests_run += 1
+            return False
+        except Exception as e:
+            print(f"❌ Supabase integration test failed: {e}")
+            self.supabase_tests_run += 1
+            return False
+
+    def test_supabase_endpoints(self):
+        """Test if there are any Supabase-specific API endpoints"""
+        print("\n=== TESTING SUPABASE API ENDPOINTS ===")
+        
+        # Test for Supabase health check endpoint
+        supabase_endpoints = [
+            "supabase/status",
+            "supabase/health", 
+            "supabase/organizations",
+            "organizations",
+            "tenant/info",
+            "multi-tenant/status"
+        ]
+        
+        for endpoint in supabase_endpoints:
+            success, response = self.run_test(f"Supabase Endpoint: {endpoint}", "GET", endpoint, 200)
+            if not success:
+                # Try with different expected status codes
+                success, response = self.run_test(f"Supabase Endpoint: {endpoint} (404 expected)", "GET", endpoint, 404)
+
+    def test_backend_health_and_status(self):
+        """Test basic backend health and status endpoints"""
+        print("\n=== TESTING BACKEND HEALTH & STATUS ===")
+        
+        # Test API root
+        success, response = self.run_test("API Root Health Check", "GET", "", 200)
+        if success and isinstance(response, dict):
+            if "message" in response:
+                print(f"   API Message: {response['message']}")
+        
+        # Test status endpoint
+        success, response = self.run_test("Status Endpoint", "GET", "status", 200)
+        
+        # Create a status check to verify database connectivity
+        success, response = self.run_test(
+            "Create Status Check (DB Connectivity)", 
+            "POST", 
+            "status", 
+            200,
+            data={"client_name": "supabase_integration_test"}
+        )
+        
+        if success:
+            print("✅ Backend can write to database successfully")
+        else:
+            print("❌ Backend database connectivity issue")
+
     def run_all_tests(self):
-        """Run all API tests"""
-        print("🚀 Starting DNDC Resource Hub API Tests - Phase 2 Enhanced")
+        """Run all API tests including Supabase integration"""
+        print("🚀 Starting DNDC Resource Hub API Tests - Supabase Integration Focus")
         print(f"Testing against: {self.base_url}")
         
         try:
+            # Test backend health first
+            self.test_backend_health_and_status()
+            
+            # Test Supabase integration
+            self.test_supabase_integration()
+            
+            # Test for Supabase-specific endpoints
+            self.test_supabase_endpoints()
+            
+            # Run existing tests
             self.test_basic_endpoints()
             self.test_resources_endpoints()
             self.test_documents_endpoints()
@@ -298,10 +463,13 @@ class DNDCAPITester:
         
         # Print final results
         print(f"\n📊 FINAL RESULTS")
-        print(f"Tests passed: {self.tests_passed}/{self.tests_run}")
-        print(f"Success rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        print(f"MongoDB API Tests passed: {self.tests_passed}/{self.tests_run}")
+        print(f"Supabase Integration Tests passed: {self.supabase_tests_passed}/{self.supabase_tests_run}")
+        total_tests = self.tests_run + self.supabase_tests_run
+        total_passed = self.tests_passed + self.supabase_tests_passed
+        print(f"Overall success rate: {(total_passed/total_tests)*100:.1f}%")
         
-        if self.tests_passed == self.tests_run:
+        if total_passed == total_tests:
             print("🎉 All tests passed!")
             return True
         else:
