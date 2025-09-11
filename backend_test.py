@@ -385,24 +385,178 @@ class DNDCAPITester:
             return False
 
     def test_supabase_endpoints(self):
-        """Test if there are any Supabase-specific API endpoints"""
-        print("\n=== TESTING SUPABASE API ENDPOINTS ===")
+        """Test the new Supabase multi-tenant API endpoints"""
+        print("\n=== TESTING SUPABASE MULTI-TENANT API ENDPOINTS ===")
         
-        # Test for Supabase health check endpoint
-        supabase_endpoints = [
-            "supabase/status",
-            "supabase/health", 
-            "supabase/organizations",
-            "organizations",
-            "tenant/info",
-            "multi-tenant/status"
-        ]
+        # DNDC Organization ID
+        dndc_org_id = "97fef08b-4fde-484d-b334-4b9450f9a280"
         
-        for endpoint in supabase_endpoints:
-            success, response = self.run_test(f"Supabase Endpoint: {endpoint}", "GET", endpoint, 200)
-            if not success:
-                # Try with different expected status codes
-                success, response = self.run_test(f"Supabase Endpoint: {endpoint} (404 expected)", "GET", endpoint, 404)
+        # 1. Test Supabase Status Check
+        print("\n--- Testing Supabase Status Check ---")
+        success, response = self.run_test("Supabase Status Check", "GET", "supabase/status", 200)
+        if success and response:
+            print(f"   Supabase Status: {response.get('status', 'Unknown')}")
+            if 'dndc_organization' in response:
+                org_info = response['dndc_organization']
+                print(f"   DNDC Org Name: {org_info.get('name', 'Unknown')}")
+                print(f"   DNDC Org ID: {org_info.get('id', 'Unknown')}")
+        
+        # 2. Test Organization Endpoints
+        print("\n--- Testing Organization Endpoints ---")
+        success, response = self.run_test(
+            "Get DNDC Organization", 
+            "GET", 
+            f"organizations/{dndc_org_id}", 
+            200
+        )
+        if success and response:
+            print(f"   Organization Name: {response.get('name', 'Unknown')}")
+            print(f"   Organization Slug: {response.get('slug', 'Unknown')}")
+        
+        # 3. Test Multi-tenant Resource Endpoints
+        print("\n--- Testing Multi-tenant Resource Endpoints ---")
+        success, resources = self.run_test(
+            "Get Organization Resources", 
+            "GET", 
+            f"organizations/{dndc_org_id}/resources", 
+            200
+        )
+        if success:
+            print(f"   Found {len(resources) if isinstance(resources, list) else 0} organization resources")
+        
+        # Test creating a resource for the organization
+        test_resource_data = {
+            "organization_id": dndc_org_id,
+            "name": "Test Multi-tenant Resource",
+            "description": "A test resource for multi-tenant functionality",
+            "category": "housing",
+            "phone": "434-555-TEST",
+            "address": "123 Test Street, Danville, VA",
+            "hours": "Mon-Fri 9am-5pm",
+            "eligibility": "Test eligibility criteria"
+        }
+        
+        success, response = self.run_test(
+            "Create Organization Resource",
+            "POST",
+            f"organizations/{dndc_org_id}/resources",
+            200,
+            data=test_resource_data
+        )
+        if success and response:
+            print(f"   Created resource with ID: {response.get('id', 'Unknown')}")
+        
+        # 4. Test DNDC Convenience Endpoints
+        print("\n--- Testing DNDC Convenience Endpoints ---")
+        
+        # Test DNDC resources endpoint
+        success, dndc_resources = self.run_test("Get DNDC Resources", "GET", "dndc/resources", 200)
+        if success:
+            print(f"   Found {len(dndc_resources) if isinstance(dndc_resources, list) else 0} DNDC resources")
+        
+        # Test DNDC applications endpoint
+        success, dndc_applications = self.run_test("Get DNDC Applications", "GET", "dndc/applications", 200)
+        if success:
+            print(f"   Found {len(dndc_applications) if isinstance(dndc_applications, list) else 0} DNDC applications")
+        
+        # Test DNDC alerts endpoint
+        success, dndc_alerts = self.run_test("Get DNDC Alerts", "GET", "dndc/alerts", 200)
+        if success:
+            print(f"   Found {len(dndc_alerts) if isinstance(dndc_alerts, list) else 0} DNDC alerts")
+        
+        # Test DNDC analytics endpoint
+        success, dndc_analytics = self.run_test("Get DNDC Analytics", "GET", "dndc/analytics", 200)
+        if success and dndc_analytics:
+            print(f"   Analytics keys: {list(dndc_analytics.keys()) if isinstance(dndc_analytics, dict) else 'Invalid format'}")
+        
+        # 5. Test Multi-tenant Application Endpoints
+        print("\n--- Testing Multi-tenant Application Endpoints ---")
+        success, org_applications = self.run_test(
+            "Get Organization Applications",
+            "GET",
+            f"organizations/{dndc_org_id}/applications",
+            200
+        )
+        if success:
+            print(f"   Found {len(org_applications) if isinstance(org_applications, list) else 0} organization applications")
+        
+        # Test creating an application for the organization
+        test_application_data = {
+            "organization_id": dndc_org_id,
+            "applicant_name": "Test Multi-tenant Applicant",
+            "applicant_email": "test.applicant@example.com",
+            "applicant_phone": "434-555-TEST",
+            "application_type": "mission_180"
+        }
+        
+        success, response = self.run_test(
+            "Create Organization Application",
+            "POST",
+            f"organizations/{dndc_org_id}/applications",
+            200,
+            data=test_application_data
+        )
+        if success and response:
+            print(f"   Created application with ID: {response.get('id', 'Unknown')}")
+            app_id = response.get('id')
+            
+            # Test updating application status
+            if app_id:
+                success, update_response = self.run_test(
+                    "Update Application Status",
+                    "PUT",
+                    f"organizations/{dndc_org_id}/applications/{app_id}/status?status=under_review&notes=Test status update",
+                    200
+                )
+                if success:
+                    print(f"   Successfully updated application status")
+        
+        # 6. Test Resource Filtering and Search
+        print("\n--- Testing Resource Filtering and Search ---")
+        
+        # Test category filtering
+        success, housing_resources = self.run_test(
+            "Get Housing Resources (Multi-tenant)",
+            "GET",
+            f"organizations/{dndc_org_id}/resources?category=housing",
+            200
+        )
+        if success:
+            print(f"   Found {len(housing_resources) if isinstance(housing_resources, list) else 0} housing resources")
+        
+        # Test search functionality
+        success, search_results = self.run_test(
+            "Search Resources (Multi-tenant)",
+            "GET",
+            f"organizations/{dndc_org_id}/resources?search=test",
+            200
+        )
+        if success:
+            print(f"   Found {len(search_results) if isinstance(search_results, list) else 0} resources matching 'test'")
+        
+        # 7. Test Error Handling
+        print("\n--- Testing Error Handling ---")
+        
+        # Test with invalid organization ID
+        invalid_org_id = "00000000-0000-0000-0000-000000000000"
+        success, response = self.run_test(
+            "Get Invalid Organization",
+            "GET",
+            f"organizations/{invalid_org_id}",
+            404
+        )
+        if success:
+            print("   ✅ Properly handles invalid organization ID")
+        
+        # Test with invalid organization resources
+        success, response = self.run_test(
+            "Get Resources for Invalid Organization",
+            "GET",
+            f"organizations/{invalid_org_id}/resources",
+            500  # Expecting error due to invalid org
+        )
+        
+        print("\n--- Supabase Multi-tenant Testing Complete ---")
 
     def test_backend_health_and_status(self):
         """Test basic backend health and status endpoints"""
