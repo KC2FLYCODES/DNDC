@@ -346,20 +346,18 @@ class DNDCAPITester:
             
             # Test multi-tenant resource retrieval
             try:
-                # Note: This will fail due to RLS without proper auth, but we can test the method exists
-                resources = supabase_service.get_resources()
-                print(f"✅ Resource retrieval method works (found {len(resources) if resources else 0} resources)")
-                self.supabase_tests_run += 1
-                self.supabase_tests_passed += 1
-            except Exception as e:
-                # Expected to fail due to RLS, but method should exist
-                if "get_resources" in str(e) and "object has no attribute" in str(e):
-                    print(f"❌ SupabaseService missing get_resources method: {e}")
-                    self.supabase_tests_run += 1
-                else:
-                    print(f"⚠️  Resource retrieval failed (expected due to RLS): {e}")
+                # Note: This will test the method exists but won't actually call it since it's async
+                supabase_service = SupabaseService(organization_id=dndc_org_id)
+                if hasattr(supabase_service, 'get_resources'):
+                    print(f"✅ SupabaseService has get_resources method")
                     self.supabase_tests_run += 1
                     self.supabase_tests_passed += 1
+                else:
+                    print(f"❌ SupabaseService missing get_resources method")
+                    self.supabase_tests_run += 1
+            except Exception as e:
+                print(f"❌ Failed to test SupabaseService methods: {e}")
+                self.supabase_tests_run += 1
             
             # Test table accessibility with service role
             tables_to_test = ['organizations', 'users', 'resources', 'applications', 'documents', 'alerts', 'contact_messages']
