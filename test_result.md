@@ -191,7 +191,7 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Frontend .env updated with real anon key. Ready for client integration."
+        comment: "✅ Frontend .env configured. Ready for client integration testing."
 
 metadata:
   created_by: "main_agent"
