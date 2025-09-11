@@ -5,6 +5,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+# Add backend directory to path for Supabase testing
+sys.path.append('/app/backend')
+
 class DNDCAPITester:
     def __init__(self, base_url="https://dndc-tenant-portal.preview.emergentagent.com"):
         self.base_url = base_url
@@ -12,6 +15,8 @@ class DNDCAPITester:
         self.tests_run = 0
         self.tests_passed = 0
         self.document_id = None
+        self.supabase_tests_run = 0
+        self.supabase_tests_passed = 0
 
     def run_test(self, name, method, endpoint, expected_status, data=None, files=None):
         """Run a single API test"""
