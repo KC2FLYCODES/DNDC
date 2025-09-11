@@ -144,6 +144,18 @@ backend:
         agent: "testing"
         comment: "CRITICAL: Supabase service layer exists and works (✅ connection, ✅ DNDC org found, ✅ all tables accessible) BUT it's NOT integrated into the main FastAPI server. The server.py still uses MongoDB exclusively. No Supabase endpoints exist in the API. This is a partial implementation - service layer ready but not connected to API endpoints."
 
+  - task: "Backend API Integration with Supabase"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "NOT IMPLEMENTED: Main FastAPI server has no Supabase integration. All endpoints (resources, applications, documents, alerts, contact) use MongoDB only. Need to create Supabase endpoints or modify existing ones to use SupabaseService. Current API: 36/42 MongoDB tests passed (84.8% success rate)."
+
 frontend:
   - task: "Supabase Client Configuration"
     implemented: true
