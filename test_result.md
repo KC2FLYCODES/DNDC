@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "User reported 'none of the setup sql you've provided works' when trying to apply the Supabase SQL schema for multi-tenancy integration. FULLY RESOLVED: Complete multi-tenant Supabase integration successfully implemented and tested."
+user_problem_statement: "Test the newly modernized Housing Application Checklist UI in the 'My Documents' tab. The UI has been completely redesigned to be clean, concise, and modern with high ease of use."
 
 backend:
   - task: "Supabase API Keys Configuration"
