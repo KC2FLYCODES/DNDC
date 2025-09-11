@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280";
+
 const ResourcesTab = ({ api, analytics }) => {
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
@@ -8,6 +10,7 @@ const ResourcesTab = ({ api, analytics }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [useSupabase, setUseSupabase] = useState(false);
 
   const categories = [
     { id: 'housing', name: 'Housing Help', icon: '🏠' },
@@ -18,7 +21,7 @@ const ResourcesTab = ({ api, analytics }) => {
 
   useEffect(() => {
     fetchResources();
-  }, []);
+  }, [useSupabase]);
 
   useEffect(() => {
     filterResources();
@@ -27,8 +30,13 @@ const ResourcesTab = ({ api, analytics }) => {
   const fetchResources = async (category = '') => {
     try {
       setLoading(true);
-      const url = category ? `${api}/resources?category=${category}` : `${api}/resources`;
-      const response = await axios.get(url);
+      
+      // Use Supabase multi-tenant endpoint or MongoDB endpoint
+      const endpoint = useSupabase 
+        ? `${api}/dndc/resources${category ? `?category=${category}` : ''}`
+        : `${api}/resources${category ? `?category=${category}` : ''}`;
+        
+      const response = await axios.get(endpoint);
       setResources(response.data);
       setError(null);
     } catch (err) {
@@ -89,6 +97,17 @@ const ResourcesTab = ({ api, analytics }) => {
             <h3 className="card-title">Community Resources</h3>
             <p className="card-subtitle">Find housing assistance, utilities help, and community services</p>
           </div>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <label style={{ fontSize: '14px', color: '#718096' }}>
+              <input
+                type="checkbox"
+                checked={useSupabase}
+                onChange={(e) => setUseSupabase(e.target.checked)}
+                style={{ marginRight: '5px' }}
+              />
+              Multi-tenant (Supabase)
+            </label>
+          </div>
         </div>
         
         <div className="search-box">
@@ -135,6 +154,7 @@ const ResourcesTab = ({ api, analytics }) => {
             }}>
               {filteredResources.length} resource{filteredResources.length !== 1 ? 's' : ''} found
               {selectedCategory && ` in ${categories.find(c => c.id === selectedCategory)?.name}`}
+              {useSupabase && <span style={{ color: '#667eea', marginLeft: '10px' }}>(Multi-tenant)</span>}
             </div>
             {filteredResources.map(resource => (
               <div key={resource.id} className="resource-item">
