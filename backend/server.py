@@ -1380,8 +1380,15 @@ async def submit_program_application(org_id: str, program_id: str, application_d
             return result.data[0]
         else:
             raise HTTPException(status_code=400, detail="Failed to submit application")
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Check if it's a "not found" error from Supabase
+        error_str = str(e).lower()
+        if "not found" in error_str or "404" in error_str:
+            raise HTTPException(status_code=404, detail="Program not found")
+        else:
+            raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/organizations/{org_id}/programs/{program_id}/applications/{app_id}")
 async def update_application_status(
