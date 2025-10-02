@@ -556,6 +556,261 @@ class DNDCAPITester:
         
         print("\n--- Supabase Multi-tenant Testing Complete ---")
 
+    def test_cdc_program_management_endpoints(self):
+        """Test the new CDC Program Management endpoints"""
+        print("\n=== TESTING CDC PROGRAM MANAGEMENT ENDPOINTS ===")
+        
+        # DNDC Organization ID
+        dndc_org_id = "97fef08b-4fde-484d-b334-4b9450f9a280"
+        
+        # 1. Test Programs CRUD Operations
+        print("\n--- Testing Programs CRUD Operations ---")
+        
+        # Test GET /api/dndc/programs (should show Mission 180 program)
+        success, programs = self.run_test("Get DNDC Programs", "GET", "dndc/programs", 200)
+        program_id = None
+        if success and programs:
+            print(f"   Found {len(programs)} programs")
+            # Look for Mission 180 program
+            mission_180 = next((p for p in programs if 'Mission 180' in p.get('name', '')), None)
+            if mission_180:
+                print(f"   ✅ Mission 180 program found: {mission_180.get('name')}")
+                program_id = mission_180.get('id')
+            else:
+                print("   ⚠️  Mission 180 program not found in results")
+                # Use first program if available
+                if programs:
+                    program_id = programs[0].get('id')
+        
+        # Test GET /api/dndc/programs/{program_id} (get program details)
+        if program_id:
+            success, program_details = self.run_test(
+                "Get Program Details", 
+                "GET", 
+                f"dndc/programs/{program_id}", 
+                200
+            )
+            if success and program_details:
+                print(f"   Program Name: {program_details.get('name', 'Unknown')}")
+                print(f"   Program Type: {program_details.get('type', 'Unknown')}")
+                print(f"   Program Status: {program_details.get('status', 'Unknown')}")
+        
+        # Test POST /api/dndc/programs (create new program)
+        test_program_data = {
+            "name": "Test Housing Program",
+            "description": "A test housing assistance program for API testing",
+            "type": "housing_assistance",
+            "status": "active",
+            "eligibility_criteria": {
+                "income_limit": "80% AMI",
+                "household_size": "1-8 members",
+                "residency": "Danville, VA area"
+            },
+            "financial_terms": {
+                "max_assistance": 5000,
+                "assistance_type": "grant",
+                "repayment_required": False
+            },
+            "application_deadline": "2024-12-31T23:59:59Z",
+            "faqs": [
+                {
+                    "question": "Who is eligible?",
+                    "answer": "Households earning 80% or less of Area Median Income"
+                }
+            ]
+        }
+        
+        success, new_program = self.run_test(
+            "Create New Program",
+            "POST",
+            "dndc/programs",
+            200,
+            data=test_program_data
+        )
+        
+        created_program_id = None
+        if success and new_program:
+            created_program_id = new_program.get('id')
+            print(f"   Created program with ID: {created_program_id}")
+            print(f"   Program Name: {new_program.get('name')}")
+        
+        # Test PUT /api/dndc/programs/{program_id} (update program)
+        if created_program_id:
+            update_data = {
+                "description": "Updated test housing assistance program description",
+                "status": "active",
+                "financial_terms": {
+                    "max_assistance": 7500,
+                    "assistance_type": "grant",
+                    "repayment_required": False
+                }
+            }
+            
+            success, updated_program = self.run_test(
+                "Update Program",
+                "PUT",
+                f"dndc/programs/{created_program_id}",
+                200,
+                data=update_data
+            )
+            
+            if success and updated_program:
+                print(f"   Updated program successfully")
+                print(f"   New max assistance: {updated_program.get('financial_terms', {}).get('max_assistance', 'Unknown')}")
+        
+        # 2. Test Multi-tenant Organization Programs Endpoints
+        print("\n--- Testing Multi-tenant Organization Programs ---")
+        
+        # Test GET /api/organizations/{org_id}/programs
+        success, org_programs = self.run_test(
+            "Get Organization Programs",
+            "GET",
+            f"organizations/{dndc_org_id}/programs",
+            200
+        )
+        
+        if success and org_programs:
+            print(f"   Found {len(org_programs)} organization programs")
+            # Use first program for application testing
+            if org_programs:
+                test_program_id = org_programs[0].get('id')
+                
+                # 3. Test Program Applications
+                print("\n--- Testing Program Applications ---")
+                
+                # Test GET /api/organizations/{org_id}/programs/{program_id}/applications
+                success, applications = self.run_test(
+                    "Get Program Applications",
+                    "GET",
+                    f"organizations/{dndc_org_id}/programs/{test_program_id}/applications",
+                    200
+                )
+                
+                if success:
+                    print(f"   Found {len(applications) if isinstance(applications, list) else 0} applications for program")
+                
+                # Test POST /api/organizations/{org_id}/programs/{program_id}/applications
+                application_data = {
+                    "applicant_name": "Sarah Johnson",
+                    "applicant_email": "sarah.johnson@email.com",
+                    "applicant_phone": "434-555-0123",
+                    "form_data": {
+                        "household_size": 3,
+                        "annual_income": 45000,
+                        "current_address": "123 Main St, Danville, VA",
+                        "housing_situation": "Renting",
+                        "assistance_needed": "Down payment assistance"
+                    }
+                }
+                
+                success, new_application = self.run_test(
+                    "Submit Program Application",
+                    "POST",
+                    f"organizations/{dndc_org_id}/programs/{test_program_id}/applications",
+                    200,
+                    data=application_data
+                )
+                
+                if success and new_application:
+                    app_id = new_application.get('id')
+                    print(f"   Submitted application with ID: {app_id}")
+                    print(f"   Applicant: {new_application.get('applicant_name')}")
+                    print(f"   Status: {new_application.get('status')}")
+                    
+                    # Test updating application status
+                    if app_id:
+                        update_data = {
+                            "status": "under_review",
+                            "review_notes": "Application received and under initial review"
+                        }
+                        
+                        success, updated_app = self.run_test(
+                            "Update Application Status",
+                            "PUT",
+                            f"organizations/{dndc_org_id}/programs/{test_program_id}/applications/{app_id}",
+                            200,
+                            data=update_data
+                        )
+                        
+                        if success:
+                            print(f"   Updated application status to: {updated_app.get('status', 'Unknown')}")
+        
+        # 4. Test Dashboard Analytics
+        print("\n--- Testing Dashboard Analytics ---")
+        
+        # Test GET /api/dndc/programs-dashboard
+        success, dashboard = self.run_test(
+            "Get Programs Dashboard",
+            "GET",
+            "dndc/programs-dashboard",
+            200
+        )
+        
+        if success and dashboard:
+            print(f"   Total Programs: {dashboard.get('total_programs', 0)}")
+            print(f"   Active Programs: {dashboard.get('active_programs', 0)}")
+            print(f"   Total Applications: {dashboard.get('total_applications', 0)}")
+            print(f"   Pending Applications: {dashboard.get('pending_applications', 0)}")
+            print(f"   Approved Applications: {dashboard.get('approved_applications', 0)}")
+        
+        # Test organization-specific dashboard
+        success, org_dashboard = self.run_test(
+            "Get Organization Programs Dashboard",
+            "GET",
+            f"organizations/{dndc_org_id}/programs-dashboard",
+            200
+        )
+        
+        if success and org_dashboard:
+            print(f"   Organization Dashboard - Total Programs: {org_dashboard.get('total_programs', 0)}")
+            print(f"   Organization Dashboard - Active Programs: {org_dashboard.get('active_programs', 0)}")
+        
+        # 5. Test Data Validation and Error Handling
+        print("\n--- Testing Data Validation and Error Handling ---")
+        
+        # Test creating program with invalid data
+        invalid_program_data = {
+            "name": "",  # Empty name should fail
+            "type": "invalid_type"
+        }
+        
+        success, response = self.run_test(
+            "Create Program with Invalid Data",
+            "POST",
+            "dndc/programs",
+            400,  # Expecting validation error
+            data=invalid_program_data
+        )
+        
+        if success:
+            print("   ✅ Properly validates program data")
+        
+        # Test accessing non-existent program
+        fake_program_id = "00000000-0000-0000-0000-000000000000"
+        success, response = self.run_test(
+            "Get Non-existent Program",
+            "GET",
+            f"dndc/programs/{fake_program_id}",
+            404
+        )
+        
+        if success:
+            print("   ✅ Properly handles non-existent program requests")
+        
+        # Test submitting application to non-existent program
+        success, response = self.run_test(
+            "Submit Application to Non-existent Program",
+            "POST",
+            f"organizations/{dndc_org_id}/programs/{fake_program_id}/applications",
+            404,
+            data=application_data
+        )
+        
+        if success:
+            print("   ✅ Properly handles applications to non-existent programs")
+        
+        print("\n--- CDC Program Management Testing Complete ---")
+
     def test_backend_health_and_status(self):
         """Test basic backend health and status endpoints"""
         print("\n=== TESTING BACKEND HEALTH & STATUS ===")
