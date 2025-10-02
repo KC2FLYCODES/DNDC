@@ -1243,9 +1243,21 @@ async def create_organization_program(org_id: str, program_data: dict):
     try:
         service = get_supabase_service(org_id)
         
-        # Add organization_id to program data
+        # Get the admin user for this organization to use as created_by
+        users_result = service.supabase.table('users').select('id').eq('organization_id', org_id).eq('role', 'admin').limit(1).execute()
+        
+        if not users_result.data:
+            # If no admin user, get any user from the organization
+            users_result = service.supabase.table('users').select('id').eq('organization_id', org_id).limit(1).execute()
+        
+        if not users_result.data:
+            raise HTTPException(status_code=400, detail="No users found for organization")
+        
+        admin_user_id = users_result.data[0]['id']
+        
+        # Add organization_id and created_by to program data
         program_data['organization_id'] = org_id
-        program_data['created_by'] = program_data.get('created_by') or org_id
+        program_data['created_by'] = admin_user_id
         
         result = service.supabase.table('programs').insert(program_data).execute()
         
