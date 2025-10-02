@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the newly modernized Housing Application Checklist UI in the 'My Documents' tab. The UI has been completely redesigned to be clean, concise, and modern with high ease of use."
+user_problem_statement: "Test the newly implemented CDC Program Management system backend API endpoints. The database schema has been successfully created in Supabase."
 
 backend:
   - task: "Supabase API Keys Configuration"
