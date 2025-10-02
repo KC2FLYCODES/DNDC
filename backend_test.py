@@ -850,6 +850,9 @@ class DNDCAPITester:
             # PRIORITY: Test new Supabase multi-tenant endpoints
             self.test_supabase_endpoints()
             
+            # PRIORITY: Test new CDC Program Management endpoints
+            self.test_cdc_program_management_endpoints()
+            
             # Test Supabase integration layer
             self.test_supabase_integration()
             
