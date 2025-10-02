@@ -113,6 +113,8 @@ const ResourceHub = () => {
     switch (activeTab) {
       case 'resources':
         return <ResourcesTab {...commonProps} />;
+      case 'programs':
+        return <ProgramsTab {...commonProps} />;
       case 'applications':
         return <ApplicationTracker {...commonProps} />;
       case 'calculator':
@@ -128,9 +130,65 @@ const ResourceHub = () => {
     }
   };
 
-  // Show admin dashboard if logged in as admin
+  // Show admin dashboard with program management
   if (adminUser) {
-    return <AdminDashboard api={API} onLogout={handleAdminLogout} />;
+    return (
+      <div>
+        <div style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+          color: 'white', 
+          padding: '1rem 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <h2 style={{ margin: 0 }}>DNDC Admin Portal</h2>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <button
+              onClick={() => setActiveAdminTab('dashboard')}
+              style={{
+                background: activeAdminTab === 'dashboard' ? 'rgba(255,255,255,0.2)' : 'transparent',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              📊 Dashboard
+            </button>
+            <button
+              onClick={() => setActiveAdminTab('programs')}
+              style={{
+                background: activeAdminTab === 'programs' ? 'rgba(255,255,255,0.2)' : 'transparent',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              📋 Programs
+            </button>
+            <button onClick={handleAdminLogout} style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}>
+              Logout
+            </button>
+          </div>
+        </div>
+        {activeAdminTab === 'dashboard' ? (
+          <AdminDashboard api={API} onLogout={handleAdminLogout} />
+        ) : (
+          <ProgramManagement api={API} />
+        )}
+      </div>
+    );
   }
 
   // Show admin login modal
