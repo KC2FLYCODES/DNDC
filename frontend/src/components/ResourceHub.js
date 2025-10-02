@@ -24,6 +24,7 @@ const ResourceHub = () => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [adminToken, setAdminToken] = useState(null);
+  const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
   const dropdownRef = useRef(null);
   const [analytics] = useState(new AnalyticsTracker(API));
   const { isNative, platform, scheduleNotification } = useCapacitor();
