@@ -1460,6 +1460,11 @@ async def get_dndc_program_details(program_id: str):
     """Get DNDC program details (convenience endpoint)"""
     return await get_program_details(DNDC_ORG_ID, program_id)
 
+@api_router.put("/dndc/programs/{program_id}")
+async def update_dndc_program(program_id: str, program_data: dict):
+    """Update DNDC program (convenience endpoint)"""
+    return await update_program(DNDC_ORG_ID, program_id, program_data)
+
 @api_router.get("/dndc/programs-dashboard")
 async def get_dndc_programs_dashboard():
     """Get DNDC programs dashboard (convenience endpoint)"""
