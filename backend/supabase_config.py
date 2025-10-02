@@ -158,6 +158,45 @@ CREATE TABLE financial_calculations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Programs table for configurable CDC programs
+CREATE TABLE programs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(100) NOT NULL, -- 'forgivable_loan', 'emergency_repair', 'weatherization', 'down_payment_assistance', 'accessibility', 'custom'
+    description TEXT,
+    eligibility_criteria JSONB DEFAULT '[]',
+    geographic_scope TEXT,
+    financial_terms JSONB DEFAULT '{}',
+    required_documents TEXT[] DEFAULT '{}',
+    faqs JSONB DEFAULT '[]',
+    status VARCHAR(50) DEFAULT 'active', -- 'active', 'inactive', 'archived'
+    application_deadline DATE,
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_template BOOLEAN DEFAULT FALSE
+);
+
+-- Program applications table
+CREATE TABLE program_applications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    program_id UUID REFERENCES programs(id) ON DELETE CASCADE,
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id),
+    applicant_name VARCHAR(255) NOT NULL,
+    applicant_email VARCHAR(255),
+    applicant_phone VARCHAR(50),
+    application_data JSONB NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'under_review', 'approved', 'denied', 'withdrawn'
+    review_notes TEXT,
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    reviewed_by UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Row Level Security Policies
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
