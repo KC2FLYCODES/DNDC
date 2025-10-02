@@ -1209,6 +1209,236 @@ async def get_dndc_analytics():
     """Get DNDC analytics (convenience endpoint)"""
     return await get_organization_analytics(DNDC_ORG_ID)
 
+# ================================
+# CDC PROGRAMS MANAGEMENT ENDPOINTS
+# ================================
+
+@api_router.get("/organizations/{org_id}/programs", response_model=List[dict])
+async def get_organization_programs(
+    org_id: str,
+    status: Optional[str] = None,
+    program_type: Optional[str] = None
+):
+    """Get programs for a specific organization"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Build query
+        query = service.supabase.table('programs').select('*').eq('organization_id', org_id)
+        
+        if status:
+            query = query.eq('status', status)
+        if program_type:
+            query = query.eq('type', program_type)
+            
+        result = query.order('created_at', desc=True).execute()
+        
+        return result.data if result.data else []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/organizations/{org_id}/programs")
+async def create_organization_program(org_id: str, program_data: dict):
+    """Create a new program for an organization"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Add organization_id to program data
+        program_data['organization_id'] = org_id
+        program_data['created_by'] = program_data.get('created_by') or org_id
+        
+        result = service.supabase.table('programs').insert(program_data).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create program")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/programs/{program_id}")
+async def get_program_details(org_id: str, program_id: str):
+    """Get detailed program information"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        result = service.supabase.table('programs').select('*').eq('id', program_id).eq('organization_id', org_id).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise HTTPException(status_code=404, detail="Program not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/organizations/{org_id}/programs/{program_id}")
+async def update_program(org_id: str, program_id: str, program_data: dict):
+    """Update an existing program"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Remove organization_id from update data to prevent changes
+        program_data.pop('organization_id', None)
+        program_data['updated_at'] = datetime.now().isoformat()
+        
+        result = service.supabase.table('programs').update(program_data).eq('id', program_id).eq('organization_id', org_id).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise HTTPException(status_code=404, detail="Program not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/organizations/{org_id}/programs/{program_id}")
+async def delete_program(org_id: str, program_id: str):
+    """Delete a program (archives it instead of hard delete)"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Archive instead of delete to preserve application history
+        result = service.supabase.table('programs').update({'status': 'archived'}).eq('id', program_id).eq('organization_id', org_id).execute()
+        
+        if result.data:
+            return {"message": "Program archived successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Program not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Program Applications Endpoints
+@api_router.get("/organizations/{org_id}/programs/{program_id}/applications")
+async def get_program_applications(
+    org_id: str, 
+    program_id: str,
+    status: Optional[str] = None
+):
+    """Get applications for a specific program"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        query = service.supabase.table('program_applications').select('*').eq('program_id', program_id).eq('organization_id', org_id)
+        
+        if status:
+            query = query.eq('status', status)
+            
+        result = query.order('submitted_at', desc=True).execute()
+        
+        return result.data if result.data else []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/organizations/{org_id}/programs/{program_id}/applications")
+async def submit_program_application(org_id: str, program_id: str, application_data: dict):
+    """Submit a new application for a program"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Verify program exists and is active
+        program_result = service.supabase.table('programs').select('*').eq('id', program_id).eq('organization_id', org_id).execute()
+        
+        if not program_result.data:
+            raise HTTPException(status_code=404, detail="Program not found")
+        
+        program = program_result.data[0]
+        if program['status'] != 'active':
+            raise HTTPException(status_code=400, detail="Program is not currently accepting applications")
+        
+        # Prepare application data
+        app_data = {
+            'program_id': program_id,
+            'organization_id': org_id,
+            'applicant_name': application_data.get('applicant_name'),
+            'applicant_email': application_data.get('applicant_email'),
+            'applicant_phone': application_data.get('applicant_phone'),
+            'application_data': application_data.get('form_data', {}),
+            'status': 'pending'
+        }
+        
+        result = service.supabase.table('program_applications').insert(app_data).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise HTTPException(status_code=400, detail="Failed to submit application")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/organizations/{org_id}/programs/{program_id}/applications/{app_id}")
+async def update_application_status(
+    org_id: str, 
+    program_id: str, 
+    app_id: str, 
+    update_data: dict
+):
+    """Update application status and review notes"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        update_data['updated_at'] = datetime.now().isoformat()
+        if update_data.get('status') in ['approved', 'denied']:
+            update_data['reviewed_at'] = datetime.now().isoformat()
+        
+        result = service.supabase.table('program_applications').update(update_data).eq('id', app_id).eq('organization_id', org_id).execute()
+        
+        if result.data:
+            return result.data[0]
+        else:
+            raise HTTPException(status_code=404, detail="Application not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/organizations/{org_id}/programs-dashboard")
+async def get_programs_dashboard(org_id: str):
+    """Get dashboard overview of all programs and applications"""
+    try:
+        service = get_supabase_service(org_id)
+        
+        # Get programs summary
+        programs_result = service.supabase.table('programs').select('id, name, type, status').eq('organization_id', org_id).execute()
+        
+        # Get applications summary
+        apps_result = service.supabase.table('program_applications').select('program_id, status').eq('organization_id', org_id).execute()
+        
+        # Calculate statistics
+        programs = programs_result.data if programs_result.data else []
+        applications = apps_result.data if apps_result.data else []
+        
+        dashboard_data = {
+            'total_programs': len(programs),
+            'active_programs': len([p for p in programs if p['status'] == 'active']),
+            'total_applications': len(applications),
+            'pending_applications': len([a for a in applications if a['status'] == 'pending']),
+            'approved_applications': len([a for a in applications if a['status'] == 'approved']),
+            'programs': programs,
+            'recent_applications': applications[:10]  # Last 10 applications
+        }
+        
+        return dashboard_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# DNDC Programs Convenience Endpoints
+@api_router.get("/dndc/programs")
+async def get_dndc_programs(status: Optional[str] = None, program_type: Optional[str] = None):
+    """Get DNDC programs (convenience endpoint)"""
+    return await get_organization_programs(DNDC_ORG_ID, status, program_type)
+
+@api_router.post("/dndc/programs")
+async def create_dndc_program(program_data: dict):
+    """Create DNDC program (convenience endpoint)"""
+    return await create_organization_program(DNDC_ORG_ID, program_data)
+
+@api_router.get("/dndc/programs/{program_id}")
+async def get_dndc_program_details(program_id: str):
+    """Get DNDC program details (convenience endpoint)"""
+    return await get_program_details(DNDC_ORG_ID, program_id)
+
+@api_router.get("/dndc/programs-dashboard")
+async def get_dndc_programs_dashboard():
+    """Get DNDC programs dashboard (convenience endpoint)"""
+    return await get_programs_dashboard(DNDC_ORG_ID)
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
