@@ -1486,6 +1486,111 @@ async def startup_db():
         await db.testimonials.insert_many(sample_testimonials)
 
 # ================================
+# SMART NOTIFICATIONS ENDPOINTS
+# ================================
+
+@api_router.get("/notifications", response_model=List[Notification])
+async def get_notifications(user_id: Optional[str] = None, unread_only: bool = False):
+    """Get notifications for a user or broadcast notifications"""
+    query = {"$or": [{"user_id": user_id}, {"user_id": None}]} if user_id else {"user_id": None}
+    
+    # Filter out expired notifications
+    current_time = datetime.utcnow()
+    query["$or"] = [
+        {"expires_at": None},
+        {"expires_at": {"$gte": current_time}}
+    ]
+    
+    if unread_only:
+        query["is_read"] = False
+    
+    notifications = await db.notifications.find(query).sort("created_at", -1).limit(50).to_list(100)
+    return [Notification(**notif) for notif in notifications]
+
+@api_router.post("/notifications", response_model=Notification)
+async def create_notification(notification_data: NotificationCreate):
+    """Create a new notification (admin only)"""
+    notif_dict = notification_data.dict()
+    notif_obj = Notification(**notif_dict)
+    await db.notifications.insert_one(notif_obj.dict())
+    return notif_obj
+
+@api_router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str):
+    """Mark a notification as read"""
+    result = await db.notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"is_read": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"message": "Notification marked as read"}
+
+@api_router.put("/notifications/mark-all-read")
+async def mark_all_notifications_read(user_id: str):
+    """Mark all notifications as read for a user"""
+    await db.notifications.update_many(
+        {"$or": [{"user_id": user_id}, {"user_id": None}]},
+        {"$set": {"is_read": True}}
+    )
+    return {"message": "All notifications marked as read"}
+
+@api_router.delete("/notifications/{notification_id}")
+async def delete_notification(notification_id: str):
+    """Delete a notification (admin only)"""
+    result = await db.notifications.delete_one({"id": notification_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"message": "Notification deleted successfully"}
+
+@api_router.get("/notifications/unread-count")
+async def get_unread_count(user_id: Optional[str] = None):
+    """Get count of unread notifications"""
+    query = {"$or": [{"user_id": user_id}, {"user_id": None}], "is_read": False} if user_id else {"user_id": None, "is_read": False}
+    
+    # Filter out expired notifications
+    current_time = datetime.utcnow()
+    query["$or"] = [
+        {"expires_at": None},
+        {"expires_at": {"$gte": current_time}}
+    ]
+    
+    count = await db.notifications.count_documents(query)
+    return {"unread_count": count}
+
+# Notification Preferences
+@api_router.get("/notification-preferences/{user_id}")
+async def get_notification_preferences(user_id: str):
+    """Get user's notification preferences"""
+    prefs = await db.notification_preferences.find_one({"user_id": user_id})
+    if not prefs:
+        # Return default preferences
+        return {
+            "user_id": user_id,
+            "deadline_reminders": True,
+            "property_alerts": True,
+            "program_updates": True,
+            "general_announcements": True,
+            "email_notifications": False,
+            "sms_notifications": False
+        }
+    return NotificationPreference(**prefs)
+
+@api_router.put("/notification-preferences/{user_id}")
+async def update_notification_preferences(user_id: str, preferences: dict):
+    """Update user's notification preferences"""
+    preferences["user_id"] = user_id
+    preferences["updated_at"] = datetime.utcnow()
+    
+    result = await db.notification_preferences.update_one(
+        {"user_id": user_id},
+        {"$set": preferences},
+        upsert=True
+    )
+    
+    return {"message": "Preferences updated successfully"}
+
+# ================================
 # COMMUNITY BOARD ENDPOINTS
 # ================================
 
