@@ -118,6 +118,8 @@ const ResourceHub = () => {
         return <ResourcesTab {...commonProps} />;
       case 'programs':
         return <ProgramsTab {...commonProps} />;
+      case 'map':
+        return <NeighborhoodMap {...commonProps} />;
       case 'applications':
         return <ApplicationTracker {...commonProps} />;
       case 'calculator':
