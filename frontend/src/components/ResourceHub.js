@@ -122,6 +122,8 @@ const ResourceHub = () => {
         return <ProgramsTab {...commonProps} />;
       case 'map':
         return <NeighborhoodMap {...commonProps} />;
+      case 'community':
+        return <CommunityBoard {...commonProps} />;
       case 'applications':
         return <ApplicationTracker {...commonProps} />;
       case 'calculator':
