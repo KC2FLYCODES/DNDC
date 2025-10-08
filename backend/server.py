@@ -180,6 +180,44 @@ class LoanCalculation(BaseModel):
     total_cost: float
     calculated_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Phase 3 Models - Smart Notifications
+class Notification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: Optional[str] = None  # None for broadcast notifications
+    notification_type: str  # deadline_reminder, property_alert, program_update, general
+    title: str
+    message: str
+    related_item_id: Optional[str] = None  # ID of related property, program, or application
+    related_item_type: Optional[str] = None  # property, program, application, event
+    is_read: bool = False
+    priority: str = "normal"  # low, normal, high, urgent
+    action_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: Optional[datetime] = None
+
+class NotificationCreate(BaseModel):
+    user_id: Optional[str] = None
+    notification_type: str
+    title: str
+    message: str
+    related_item_id: Optional[str] = None
+    related_item_type: Optional[str] = None
+    priority: str = "normal"
+    action_url: Optional[str] = None
+    expires_at: Optional[datetime] = None
+
+class NotificationPreference(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    deadline_reminders: bool = True
+    property_alerts: bool = True
+    program_updates: bool = True
+    general_announcements: bool = True
+    email_notifications: bool = False
+    sms_notifications: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 # Phase 3 Models - Community Board
 class SuccessStory(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
