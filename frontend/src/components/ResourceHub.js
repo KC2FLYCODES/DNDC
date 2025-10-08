@@ -31,6 +31,8 @@ const ResourceHub = () => {
   const dropdownRef = useRef(null);
   const [analytics] = useState(new AnalyticsTracker(API));
   const { isNative, platform, scheduleNotification } = useCapacitor();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const tabs = [
     { id: 'resources', label: 'Community Resources', icon: '🏘️' },
