@@ -33,6 +33,7 @@ const ResourceHub = () => {
   const tabs = [
     { id: 'resources', label: 'Community Resources', icon: '🏘️' },
     { id: 'programs', label: 'Housing Programs', icon: '📋' },
+    { id: 'map', label: 'Property Map', icon: '🗺️' },
     { id: 'applications', label: 'My Application', icon: '📊' },
     { id: 'calculator', label: 'Financial Calculator', icon: '💰' },
     { id: 'documents', label: 'Document Upload', icon: '📄' },
