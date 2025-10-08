@@ -1682,6 +1682,14 @@ async def get_success_stories(featured_only: bool = False):
     stories = await db.success_stories.find(query).sort("created_at", -1).to_list(1000)
     return [SuccessStory(**story) for story in stories]
 
+@api_router.get("/success-stories/{story_id}", response_model=SuccessStory)
+async def get_success_story(story_id: str):
+    """Get a specific success story"""
+    story = await db.success_stories.find_one({"id": story_id})
+    if not story:
+        raise HTTPException(status_code=404, detail="Success story not found")
+    return SuccessStory(**story)
+
 @api_router.post("/success-stories", response_model=SuccessStory)
 async def create_success_story(story_data: SuccessStoryCreate):
     """Create a new success story (admin only)"""
