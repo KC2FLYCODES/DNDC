@@ -1484,6 +1484,61 @@ async def startup_db():
             }
         ]
         await db.testimonials.insert_many(sample_testimonials)
+    
+    # Initialize sample notifications
+    existing_notifications = await db.notifications.count_documents({})
+    if existing_notifications == 0:
+        sample_notifications = [
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": None,  # Broadcast notification
+                "notification_type": "deadline_reminder",
+                "title": "Application Deadline Approaching",
+                "message": "The Mission 180 program application deadline is in 7 days. Don't miss out on this opportunity!",
+                "related_item_type": "program",
+                "priority": "high",
+                "is_read": False,
+                "created_at": datetime.utcnow(),
+                "expires_at": datetime.utcnow() + timedelta(days=7)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": None,
+                "notification_type": "property_alert",
+                "title": "New Property Available",
+                "message": "A new 3-bedroom single-family home in Danville is now available through the Mission 180 program. View details on the Property Map.",
+                "related_item_type": "property",
+                "priority": "normal",
+                "is_read": False,
+                "created_at": datetime.utcnow(),
+                "expires_at": datetime.utcnow() + timedelta(days=14)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": None,
+                "notification_type": "program_update",
+                "title": "Additional Funding Available",
+                "message": "Good news! DNDC has received additional funding for rental assistance. New applications are now being accepted.",
+                "related_item_type": "program",
+                "priority": "high",
+                "is_read": False,
+                "created_at": datetime.utcnow(),
+                "expires_at": datetime.utcnow() + timedelta(days=21)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": None,
+                "notification_type": "general",
+                "title": "First-Time Homebuyer Workshop Next Week",
+                "message": "Join us for a free workshop covering everything you need to know about buying your first home. Register today!",
+                "related_item_type": "event",
+                "priority": "normal",
+                "is_read": False,
+                "created_at": datetime.utcnow(),
+                "expires_at": datetime.utcnow() + timedelta(days=10)
+            }
+        ]
+        await db.notifications.insert_many(sample_notifications)
 
 # ================================
 # SMART NOTIFICATIONS ENDPOINTS
