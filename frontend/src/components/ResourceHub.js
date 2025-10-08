@@ -243,30 +243,89 @@ const ResourceHub = () => {
             </div>
           </div>
           {!isNative && (
-            <button 
-              className="admin-access-btn"
-              onClick={() => setShowAdminLogin(true)}
-              style={{
-                position: 'absolute',
-                top: '1rem',
-                right: '1rem',
-                background: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.3)',
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
-              onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
-            >
-              🛠️ Admin
-            </button>
+            <>
+              {/* Notification Bell */}
+              <button
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  analytics.trackButtonClick('notification_bell', 'navigation');
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '7rem',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '8px',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  position: 'relative'
+                }}
+                onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+                onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+              >
+                🔔
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    background: '#ef4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '22px',
+                    height: '22px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    border: '2px solid white'
+                  }}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              
+              <button 
+                className="admin-access-btn"
+                onClick={() => setShowAdminLogin(true)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+                onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+              >
+                🛠️ Admin
+              </button>
+            </>
           )}
         </div>
       </header>
+      
+      {/* Notification Center */}
+      <NotificationCenter 
+        api={API}
+        analytics={analytics}
+        isOpen={showNotifications}
+        onClose={() => {
+          setShowNotifications(false);
+          fetchUnreadCount();
+        }}
+      />
       
       <nav className="nav-dropdown-container">
         <div className="nav-dropdown-wrapper">
