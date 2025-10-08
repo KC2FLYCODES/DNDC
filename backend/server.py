@@ -1310,6 +1310,142 @@ async def startup_db():
             }
         ]
         await db.properties.insert_many(sample_properties)
+    
+    # Initialize sample success stories
+    existing_stories = await db.success_stories.count_documents({})
+    if existing_stories == 0:
+        sample_stories = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "From Renting to Homeownership: Sarah's Journey",
+                "resident_name": "Sarah Johnson",
+                "story_text": "After years of struggling with high rent payments, I joined the Mission 180 program in 2023. The financial counseling and down payment assistance made my dream of homeownership a reality. Today, my family owns a beautiful 3-bedroom home in Danville, and my monthly mortgage is actually less than what I was paying in rent!",
+                "program_name": "Mission 180",
+                "achievement_date": datetime.utcnow() - timedelta(days=90),
+                "is_featured": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Second Chance at Stability",
+                "resident_name": "Michael Davis",
+                "story_text": "After facing financial hardship, DNDC's rental assistance program gave me the breathing room I needed to get back on my feet. The case management team helped me create a budget, find steady employment, and eventually transition to permanent housing. I'm now saving for my own home!",
+                "program_name": "Rental Assistance",
+                "achievement_date": datetime.utcnow() - timedelta(days=60),
+                "is_featured": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Building Generational Wealth",
+                "resident_name": "The Martinez Family",
+                "story_text": "As first-time homebuyers, we were overwhelmed by the process. DNDC's homebuyer education classes and down payment assistance program made it possible. Now our children are growing up in a stable home, and we're building equity for future generations. Thank you, DNDC!",
+                "program_name": "First-Time Homebuyer",
+                "achievement_date": datetime.utcnow() - timedelta(days=120),
+                "is_featured": False,
+                "created_at": datetime.utcnow()
+            }
+        ]
+        await db.success_stories.insert_many(sample_stories)
+    
+    # Initialize sample community events
+    existing_events = await db.community_events.count_documents({})
+    if existing_events == 0:
+        sample_events = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "First-Time Homebuyer Workshop",
+                "description": "Join us for a comprehensive workshop covering everything first-time homebuyers need to know. Topics include credit repair, down payment assistance, mortgage pre-approval, and more. Light refreshments will be served.",
+                "event_date": datetime.utcnow() + timedelta(days=14),
+                "location": "DNDC Community Center, 123 Main Street, Danville, VA",
+                "event_type": "workshop",
+                "organizer": "DNDC",
+                "contact_email": "events@dndcva.org",
+                "contact_phone": "434-555-0150",
+                "registration_required": True,
+                "max_attendees": 30,
+                "current_attendees": 12,
+                "is_active": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Community Celebration: 100 Families Housed",
+                "description": "Celebrate with us as we mark a major milestone - 100 families successfully housed through our programs! Join us for food, music, success story testimonials, and community fellowship.",
+                "event_date": datetime.utcnow() + timedelta(days=21),
+                "location": "Ballou Park, Danville, VA",
+                "event_type": "celebration",
+                "organizer": "DNDC",
+                "contact_email": "events@dndcva.org",
+                "contact_phone": "434-555-0150",
+                "registration_required": False,
+                "is_active": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Financial Literacy Series: Building Emergency Savings",
+                "description": "Part 3 of our Financial Literacy Series. Learn practical strategies for building and maintaining an emergency fund, even on a tight budget. Free financial planning workbooks for all attendees.",
+                "event_date": datetime.utcnow() + timedelta(days=7),
+                "location": "Virtual (Zoom Link Provided Upon Registration)",
+                "event_type": "workshop",
+                "organizer": "DNDC Financial Counseling",
+                "contact_email": "finance@dndcva.org",
+                "registration_required": True,
+                "max_attendees": 50,
+                "current_attendees": 23,
+                "is_active": True,
+                "created_at": datetime.utcnow()
+            }
+        ]
+        await db.community_events.insert_many(sample_events)
+    
+    # Initialize sample testimonials
+    existing_testimonials = await db.testimonials.count_documents({})
+    if existing_testimonials == 0:
+        sample_testimonials = [
+            {
+                "id": str(uuid.uuid4()),
+                "resident_name": "Jennifer Wilson",
+                "testimonial_text": "DNDC didn't just help me find housing - they changed my life. The staff treated me with dignity and respect, and the support services helped me build confidence and financial stability. I'm forever grateful.",
+                "program_name": "Mission 180",
+                "rating": 5,
+                "is_approved": True,
+                "is_featured": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "resident_name": "Robert Thompson",
+                "testimonial_text": "Professional, compassionate, and effective. The DNDC team went above and beyond to help me navigate the homebuying process. I highly recommend their services to anyone looking for housing assistance.",
+                "program_name": "First-Time Homebuyer Program",
+                "rating": 5,
+                "is_approved": True,
+                "is_featured": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "resident_name": "Lisa Anderson",
+                "testimonial_text": "After years of housing instability, DNDC gave me hope. The rental assistance program provided immediate relief, and the case management helped me develop a long-term plan. My family is now thriving in stable housing.",
+                "program_name": "Rental Assistance",
+                "rating": 5,
+                "is_approved": True,
+                "is_featured": False,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "resident_name": "Carlos Garcia",
+                "testimonial_text": "The financial education workshops were eye-opening. I learned how to budget, save, and improve my credit score. Six months later, I was approved for my first mortgage. Thank you, DNDC!",
+                "program_name": "Homebuyer Education",
+                "rating": 5,
+                "is_approved": True,
+                "is_featured": False,
+                "created_at": datetime.utcnow()
+            }
+        ]
+        await db.testimonials.insert_many(sample_testimonials)
 
 # ================================
 # COMMUNITY BOARD ENDPOINTS
