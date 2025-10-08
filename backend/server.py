@@ -180,6 +180,79 @@ class LoanCalculation(BaseModel):
     total_cost: float
     calculated_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Phase 3 Models - Community Board
+class SuccessStory(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    resident_name: str
+    story_text: str
+    before_image_url: Optional[str] = None
+    after_image_url: Optional[str] = None
+    program_name: Optional[str] = None
+    achievement_date: Optional[datetime] = None
+    is_featured: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SuccessStoryCreate(BaseModel):
+    title: str
+    resident_name: str
+    story_text: str
+    before_image_url: Optional[str] = None
+    after_image_url: Optional[str] = None
+    program_name: Optional[str] = None
+    achievement_date: Optional[datetime] = None
+    is_featured: bool = False
+
+class CommunityEvent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    event_date: datetime
+    location: str
+    event_type: str  # workshop, meeting, celebration, fundraiser
+    organizer: str = "DNDC"
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    image_url: Optional[str] = None
+    registration_required: bool = False
+    registration_link: Optional[str] = None
+    max_attendees: Optional[int] = None
+    current_attendees: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class CommunityEventCreate(BaseModel):
+    title: str
+    description: str
+    event_date: datetime
+    location: str
+    event_type: str
+    organizer: str = "DNDC"
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    image_url: Optional[str] = None
+    registration_required: bool = False
+    registration_link: Optional[str] = None
+    max_attendees: Optional[int] = None
+
+class Testimonial(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    resident_name: str
+    testimonial_text: str
+    program_name: Optional[str] = None
+    rating: int = 5  # 1-5 stars
+    photo_url: Optional[str] = None
+    is_approved: bool = False
+    is_featured: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TestimonialCreate(BaseModel):
+    resident_name: str
+    testimonial_text: str
+    program_name: Optional[str] = None
+    rating: int = 5
+    photo_url: Optional[str] = None
+
 # Phase 3 Models - Property Management
 class Property(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
