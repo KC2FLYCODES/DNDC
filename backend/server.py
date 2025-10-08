@@ -1312,6 +1312,144 @@ async def startup_db():
         await db.properties.insert_many(sample_properties)
 
 # ================================
+# COMMUNITY BOARD ENDPOINTS
+# ================================
+
+# Success Stories
+@api_router.get("/success-stories", response_model=List[SuccessStory])
+async def get_success_stories(featured_only: bool = False):
+    """Get success stories"""
+    query = {"is_featured": True} if featured_only else {}
+    stories = await db.success_stories.find(query).sort("created_at", -1).to_list(1000)
+    return [SuccessStory(**story) for story in stories]
+
+@api_router.post("/success-stories", response_model=SuccessStory)
+async def create_success_story(story_data: SuccessStoryCreate):
+    """Create a new success story (admin only)"""
+    story_dict = story_data.dict()
+    story_obj = SuccessStory(**story_dict)
+    await db.success_stories.insert_one(story_obj.dict())
+    return story_obj
+
+@api_router.put("/success-stories/{story_id}")
+async def update_success_story(story_id: str, story_data: SuccessStoryCreate):
+    """Update a success story (admin only)"""
+    result = await db.success_stories.update_one(
+        {"id": story_id},
+        {"$set": story_data.dict()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    return {"message": "Story updated successfully"}
+
+@api_router.delete("/success-stories/{story_id}")
+async def delete_success_story(story_id: str):
+    """Delete a success story (admin only)"""
+    result = await db.success_stories.delete_one({"id": story_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    return {"message": "Story deleted successfully"}
+
+# Community Events
+@api_router.get("/community-events", response_model=List[CommunityEvent])
+async def get_community_events(upcoming_only: bool = True):
+    """Get community events"""
+    query = {}
+    if upcoming_only:
+        query["event_date"] = {"$gte": datetime.utcnow()}
+        query["is_active"] = True
+    
+    events = await db.community_events.find(query).sort("event_date", 1).to_list(1000)
+    return [CommunityEvent(**event) for event in events]
+
+@api_router.get("/community-events/{event_id}", response_model=CommunityEvent)
+async def get_community_event(event_id: str):
+    """Get a specific event"""
+    event = await db.community_events.find_one({"id": event_id})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return CommunityEvent(**event)
+
+@api_router.post("/community-events", response_model=CommunityEvent)
+async def create_community_event(event_data: CommunityEventCreate):
+    """Create a new community event (admin only)"""
+    event_dict = event_data.dict()
+    event_obj = CommunityEvent(**event_dict)
+    await db.community_events.insert_one(event_obj.dict())
+    return event_obj
+
+@api_router.put("/community-events/{event_id}")
+async def update_community_event(event_id: str, event_data: CommunityEventCreate):
+    """Update a community event (admin only)"""
+    result = await db.community_events.update_one(
+        {"id": event_id},
+        {"$set": event_data.dict()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event updated successfully"}
+
+@api_router.delete("/community-events/{event_id}")
+async def delete_community_event(event_id: str):
+    """Delete a community event (admin only)"""
+    result = await db.community_events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event deleted successfully"}
+
+@api_router.post("/community-events/{event_id}/register")
+async def register_for_event(event_id: str):
+    """Register for a community event"""
+    event = await db.community_events.find_one({"id": event_id})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    if event.get("max_attendees") and event.get("current_attendees", 0) >= event["max_attendees"]:
+        raise HTTPException(status_code=400, detail="Event is full")
+    
+    await db.community_events.update_one(
+        {"id": event_id},
+        {"$inc": {"current_attendees": 1}}
+    )
+    
+    return {"message": "Successfully registered for event"}
+
+# Testimonials
+@api_router.get("/testimonials", response_model=List[Testimonial])
+async def get_testimonials(approved_only: bool = True):
+    """Get testimonials"""
+    query = {"is_approved": True} if approved_only else {}
+    testimonials = await db.testimonials.find(query).sort("created_at", -1).to_list(1000)
+    return [Testimonial(**testimonial) for testimonial in testimonials]
+
+@api_router.post("/testimonials", response_model=Testimonial)
+async def create_testimonial(testimonial_data: TestimonialCreate):
+    """Submit a new testimonial (requires admin approval)"""
+    testimonial_dict = testimonial_data.dict()
+    testimonial_obj = Testimonial(**testimonial_dict)
+    await db.testimonials.insert_one(testimonial_obj.dict())
+    return testimonial_obj
+
+@api_router.put("/testimonials/{testimonial_id}/approve")
+async def approve_testimonial(testimonial_id: str):
+    """Approve a testimonial (admin only)"""
+    result = await db.testimonials.update_one(
+        {"id": testimonial_id},
+        {"$set": {"is_approved": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    return {"message": "Testimonial approved"}
+
+@api_router.delete("/testimonials/{testimonial_id}")
+async def delete_testimonial(testimonial_id: str):
+    """Delete a testimonial (admin only)"""
+    result = await db.testimonials.delete_one({"id": testimonial_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    return {"message": "Testimonial deleted successfully"}
+
+# ================================
 # PROPERTY MANAGEMENT ENDPOINTS
 # ================================
 
