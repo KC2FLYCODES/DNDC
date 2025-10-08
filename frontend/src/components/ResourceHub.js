@@ -52,6 +52,12 @@ const ResourceHub = () => {
     // Track initial page view
     analytics.trackPageView('resources');
     
+    // Fetch unread notification count
+    fetchUnreadCount();
+    
+    // Poll for new notifications every 30 seconds
+    const notificationInterval = setInterval(fetchUnreadCount, 30000);
+    
     // Show native app welcome message
     if (isNative) {
       console.log(`DNDC Resource Hub running on ${platform}`);
@@ -74,8 +80,18 @@ const ResourceHub = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      clearInterval(notificationInterval);
     };
   }, [analytics, isNative, platform, scheduleNotification]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await axios.get(`${API}/notifications/unread-count`);
+      setUnreadCount(response.data.unread_count);
+    } catch (err) {
+      console.error('Error fetching unread count:', err);
+    }
+  };
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
