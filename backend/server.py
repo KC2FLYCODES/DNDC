@@ -180,6 +180,79 @@ class LoanCalculation(BaseModel):
     total_cost: float
     calculated_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Phase 3 Models - Property Management
+class Property(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    address: str
+    city: str = "Danville"
+    state: str = "VA"
+    zip_code: str
+    property_type: str  # single_family, multi_family, apartment, condo
+    bedrooms: int
+    bathrooms: float
+    square_feet: Optional[int] = None
+    price: Optional[float] = None
+    rent: Optional[float] = None
+    status: str = "available"  # available, pending, sold, rented
+    latitude: float
+    longitude: float
+    image_url: Optional[str] = None
+    features: List[str] = []
+    contact_name: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    program_type: Optional[str] = None  # mission_180, rental_assistance, etc.
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PropertyCreate(BaseModel):
+    title: str
+    description: str
+    address: str
+    city: str = "Danville"
+    state: str = "VA"
+    zip_code: str
+    property_type: str
+    bedrooms: int
+    bathrooms: float
+    square_feet: Optional[int] = None
+    price: Optional[float] = None
+    rent: Optional[float] = None
+    status: str = "available"
+    latitude: float
+    longitude: float
+    image_url: Optional[str] = None
+    features: List[str] = []
+    contact_name: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    program_type: Optional[str] = None
+
+class PropertyUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    property_type: Optional[str] = None
+    bedrooms: Optional[int] = None
+    bathrooms: Optional[float] = None
+    square_feet: Optional[int] = None
+    price: Optional[float] = None
+    rent: Optional[float] = None
+    status: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    image_url: Optional[str] = None
+    features: Optional[List[str]] = None
+    contact_name: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    program_type: Optional[str] = None
+
 class IncomeQualification(BaseModel):
     household_size: int
     annual_income: float
