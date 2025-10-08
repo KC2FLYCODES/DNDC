@@ -1587,6 +1587,14 @@ async def get_notifications(user_id: Optional[str] = None, unread_only: bool = F
     notifications = await db.notifications.find(query).sort("created_at", -1).limit(50).to_list(100)
     return [Notification(**notif) for notif in notifications]
 
+@api_router.get("/notifications/{notification_id}", response_model=Notification)
+async def get_notification(notification_id: str):
+    """Get a specific notification"""
+    notification = await db.notifications.find_one({"id": notification_id})
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return Notification(**notification)
+
 @api_router.post("/notifications", response_model=Notification)
 async def create_notification(notification_data: NotificationCreate):
     """Create a new notification (admin only)"""
