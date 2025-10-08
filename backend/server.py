@@ -1699,15 +1699,22 @@ async def create_success_story(story_data: SuccessStoryCreate):
     return story_obj
 
 @api_router.put("/success-stories/{story_id}")
-async def update_success_story(story_id: str, story_data: SuccessStoryCreate):
+async def update_success_story(story_id: str, story_data: SuccessStoryUpdate):
     """Update a success story (admin only)"""
+    update_dict = story_data.dict(exclude_unset=True)
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
     result = await db.success_stories.update_one(
         {"id": story_id},
-        {"$set": story_data.dict()}
+        {"$set": update_dict}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Story not found")
-    return {"message": "Story updated successfully"}
+    
+    # Return the updated story
+    updated_story = await db.success_stories.find_one({"id": story_id})
+    return SuccessStory(**updated_story)
 
 @api_router.delete("/success-stories/{story_id}")
 async def delete_success_story(story_id: str):
