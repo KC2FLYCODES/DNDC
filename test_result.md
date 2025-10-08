@@ -348,9 +348,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Neighborhood Map Integration"
-    - "Community Board"
-    - "Smart Notifications"
+    - "Neighborhood Map Frontend"
+    - "Community Board Frontend"
+    - "Smart Notifications Frontend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
