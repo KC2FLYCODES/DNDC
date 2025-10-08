@@ -291,6 +291,31 @@ class TestimonialCreate(BaseModel):
     rating: int = 5
     photo_url: Optional[str] = None
 
+# Update models for partial updates
+class SuccessStoryUpdate(BaseModel):
+    title: Optional[str] = None
+    resident_name: Optional[str] = None
+    story_text: Optional[str] = None
+    before_image_url: Optional[str] = None
+    after_image_url: Optional[str] = None
+    program_name: Optional[str] = None
+    achievement_date: Optional[datetime] = None
+    is_featured: Optional[bool] = None
+
+class CommunityEventUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    event_date: Optional[datetime] = None
+    location: Optional[str] = None
+    event_type: Optional[str] = None
+    organizer: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    image_url: Optional[str] = None
+    registration_required: Optional[bool] = None
+    registration_link: Optional[str] = None
+    max_attendees: Optional[int] = None
+
 # Phase 3 Models - Property Management
 class Property(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
