@@ -14,6 +14,7 @@ import ProgramsTab from './ProgramsTab';
 import ProgramManagement from './ProgramManagement';
 import NeighborhoodMap from './NeighborhoodMap';
 import CommunityBoard from './CommunityBoard';
+import NotificationCenter from './NotificationCenter';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
