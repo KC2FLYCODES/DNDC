@@ -1487,18 +1487,23 @@ class DNDCAPITester:
             print("❌ Backend database connectivity issue")
 
     def run_all_tests(self):
-        """Run all API tests including Supabase integration"""
-        print("🚀 Starting DNDC Resource Hub API Tests - Supabase Multi-tenant Integration Focus")
+        """Run all API tests including new Phase 3 features"""
+        print("🚀 Starting DNDC Resource Hub API Tests - Phase 3 Features Focus")
         print(f"Testing against: {self.base_url}")
         
         try:
             # Test backend health first
             self.test_backend_health_and_status()
             
-            # PRIORITY: Test new Supabase multi-tenant endpoints
+            # PRIORITY: Test new Phase 3 features
+            self.test_property_management_endpoints()
+            self.test_community_board_endpoints()
+            self.test_smart_notifications_endpoints()
+            
+            # Test existing Supabase multi-tenant endpoints
             self.test_supabase_endpoints()
             
-            # PRIORITY: Test new CDC Program Management endpoints
+            # Test CDC Program Management endpoints
             self.test_cdc_program_management_endpoints()
             
             # Test Supabase integration layer
