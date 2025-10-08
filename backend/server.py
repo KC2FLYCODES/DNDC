@@ -1753,15 +1753,22 @@ async def create_community_event(event_data: CommunityEventCreate):
     return event_obj
 
 @api_router.put("/community-events/{event_id}")
-async def update_community_event(event_id: str, event_data: CommunityEventCreate):
+async def update_community_event(event_id: str, event_data: CommunityEventUpdate):
     """Update a community event (admin only)"""
+    update_dict = event_data.dict(exclude_unset=True)
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
     result = await db.community_events.update_one(
         {"id": event_id},
-        {"$set": event_data.dict()}
+        {"$set": update_dict}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Event not found")
-    return {"message": "Event updated successfully"}
+    
+    # Return the updated event
+    updated_event = await db.community_events.find_one({"id": event_id})
+    return CommunityEvent(**updated_event)
 
 @api_router.delete("/community-events/{event_id}")
 async def delete_community_event(event_id: str):
