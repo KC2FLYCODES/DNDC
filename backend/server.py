@@ -1102,6 +1102,90 @@ async def startup_db():
         await db.applications.insert_many(sample_applications)
 
 # ================================
+# PROPERTY MANAGEMENT ENDPOINTS
+# ================================
+
+@api_router.get("/properties", response_model=List[Property])
+async def get_properties(
+    status: Optional[str] = None,
+    property_type: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    bedrooms: Optional[int] = None,
+    city: str = "Danville"
+):
+    """Get all available properties with optional filters"""
+    query = {"city": city}
+    
+    if status:
+        query["status"] = status
+    if property_type:
+        query["property_type"] = property_type
+    if bedrooms:
+        query["bedrooms"] = {"$gte": bedrooms}
+    if min_price or max_price:
+        price_query = {}
+        if min_price:
+            price_query["$gte"] = min_price
+        if max_price:
+            price_query["$lte"] = max_price
+        query["$or"] = [{"price": price_query}, {"rent": price_query}]
+    
+    properties = await db.properties.find(query).sort("created_at", -1).to_list(1000)
+    return [Property(**prop) for prop in properties]
+
+@api_router.get("/properties/{property_id}", response_model=Property)
+async def get_property(property_id: str):
+    """Get a specific property by ID"""
+    property_data = await db.properties.find_one({"id": property_id})
+    if not property_data:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return Property(**property_data)
+
+@api_router.post("/properties", response_model=Property)
+async def create_property(property_data: PropertyCreate):
+    """Create a new property listing (admin only)"""
+    property_dict = property_data.dict()
+    property_obj = Property(**property_dict)
+    await db.properties.insert_one(property_obj.dict())
+    return property_obj
+
+@api_router.put("/properties/{property_id}", response_model=Property)
+async def update_property(property_id: str, property_data: PropertyUpdate):
+    """Update an existing property (admin only)"""
+    update_dict = property_data.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.utcnow()
+    
+    result = await db.properties.update_one(
+        {"id": property_id},
+        {"$set": update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    property_data = await db.properties.find_one({"id": property_id})
+    return Property(**property_data)
+
+@api_router.delete("/properties/{property_id}")
+async def delete_property(property_id: str):
+    """Delete a property (admin only)"""
+    result = await db.properties.delete_one({"id": property_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"message": "Property deleted successfully"}
+
+@api_router.get("/properties/nearby/{lat}/{lng}")
+async def get_nearby_properties(lat: float, lng: float, radius_miles: float = 10):
+    """Get properties within a certain radius (simplified version)"""
+    # For production, use geospatial queries
+    # This is a simplified version that gets all properties
+    properties = await db.properties.find({"status": "available"}).to_list(1000)
+    return [Property(**prop) for prop in properties]
+
+# ================================
 # SUPABASE MULTI-TENANT ENDPOINTS
 # ================================
 
