@@ -811,6 +811,654 @@ class DNDCAPITester:
         
         print("\n--- CDC Program Management Testing Complete ---")
 
+    def test_property_management_endpoints(self):
+        """Test the new Property Management API endpoints"""
+        print("\n=== TESTING PROPERTY MANAGEMENT API ENDPOINTS ===")
+        
+        # 1. Test GET /api/properties (should return 5 sample properties)
+        print("\n--- Testing Property CRUD Operations ---")
+        success, properties = self.run_test("Get All Properties", "GET", "properties", 200)
+        property_id = None
+        if success and properties:
+            print(f"   Found {len(properties)} properties")
+            if len(properties) >= 5:
+                print("   ✅ Expected 5 sample properties found")
+            else:
+                print(f"   ⚠️  Expected 5 properties, found {len(properties)}")
+            property_id = properties[0].get('id') if properties else None
+        
+        # 2. Test GET /api/properties with filters
+        print("\n--- Testing Property Filtering ---")
+        
+        # Test status filter
+        success, available_properties = self.run_test(
+            "Get Available Properties", 
+            "GET", 
+            "properties?status=available", 
+            200
+        )
+        if success:
+            print(f"   Found {len(available_properties) if isinstance(available_properties, list) else 0} available properties")
+        
+        # Test property type filter
+        success, single_family = self.run_test(
+            "Get Single Family Properties", 
+            "GET", 
+            "properties?property_type=single_family", 
+            200
+        )
+        if success:
+            print(f"   Found {len(single_family) if isinstance(single_family, list) else 0} single family properties")
+        
+        # Test bedrooms filter
+        success, three_bedroom = self.run_test(
+            "Get 3-Bedroom Properties", 
+            "GET", 
+            "properties?bedrooms=3", 
+            200
+        )
+        if success:
+            print(f"   Found {len(three_bedroom) if isinstance(three_bedroom, list) else 0} 3-bedroom properties")
+        
+        # Test combined filters
+        success, filtered_properties = self.run_test(
+            "Get Filtered Properties (status=available, property_type=single_family, bedrooms=3)", 
+            "GET", 
+            "properties?status=available&property_type=single_family&bedrooms=3", 
+            200
+        )
+        if success:
+            print(f"   Found {len(filtered_properties) if isinstance(filtered_properties, list) else 0} properties matching all filters")
+        
+        # 3. Test GET /api/properties/{property_id}
+        if property_id:
+            success, property_details = self.run_test(
+                "Get Property Details", 
+                "GET", 
+                f"properties/{property_id}", 
+                200
+            )
+            if success and property_details:
+                print(f"   Property Title: {property_details.get('title', 'Unknown')}")
+                print(f"   Property Type: {property_details.get('property_type', 'Unknown')}")
+                print(f"   Bedrooms: {property_details.get('bedrooms', 'Unknown')}")
+                print(f"   Status: {property_details.get('status', 'Unknown')}")
+        
+        # 4. Test POST /api/properties (create new property)
+        print("\n--- Testing Property Creation ---")
+        test_property_data = {
+            "title": "Test Property - API Testing",
+            "description": "A test property created during API testing",
+            "address": "456 Test Avenue",
+            "city": "Danville",
+            "state": "VA",
+            "zip_code": "24541",
+            "property_type": "single_family",
+            "bedrooms": 3,
+            "bathrooms": 2.0,
+            "square_feet": 1500,
+            "price": 125000,
+            "status": "available",
+            "latitude": 36.585901,
+            "longitude": -79.395096,
+            "features": ["Test Feature 1", "Test Feature 2"],
+            "contact_name": "Test Contact",
+            "contact_phone": "434-555-TEST",
+            "contact_email": "test@dndcva.org",
+            "program_type": "test_program"
+        }
+        
+        success, new_property = self.run_test(
+            "Create New Property",
+            "POST",
+            "properties",
+            200,
+            data=test_property_data
+        )
+        
+        created_property_id = None
+        if success and new_property:
+            created_property_id = new_property.get('id')
+            print(f"   Created property with ID: {created_property_id}")
+            print(f"   Property Title: {new_property.get('title')}")
+        
+        # 5. Test PUT /api/properties/{property_id} (update property status)
+        if created_property_id:
+            print("\n--- Testing Property Updates ---")
+            update_data = {
+                "status": "pending",
+                "description": "Updated test property - status changed to pending"
+            }
+            
+            success, updated_property = self.run_test(
+                "Update Property Status to Pending",
+                "PUT",
+                f"properties/{created_property_id}",
+                200,
+                data=update_data
+            )
+            
+            if success and updated_property:
+                print(f"   Updated property status to: {updated_property.get('status')}")
+        
+        # 6. Test DELETE /api/properties/{property_id}
+        if created_property_id:
+            print("\n--- Testing Property Deletion ---")
+            success, response = self.run_test(
+                "Delete Property",
+                "DELETE",
+                f"properties/{created_property_id}",
+                200
+            )
+            
+            if success:
+                print("   ✅ Property deleted successfully")
+                
+                # Verify deletion by trying to get the property
+                success, response = self.run_test(
+                    "Verify Property Deletion",
+                    "GET",
+                    f"properties/{created_property_id}",
+                    404
+                )
+                
+                if success:
+                    print("   ✅ Property deletion verified (404 returned)")
+        
+        # 7. Test error handling
+        print("\n--- Testing Property Error Handling ---")
+        
+        # Test getting non-existent property
+        fake_property_id = "00000000-0000-0000-0000-000000000000"
+        success, response = self.run_test(
+            "Get Non-existent Property",
+            "GET",
+            f"properties/{fake_property_id}",
+            404
+        )
+        
+        if success:
+            print("   ✅ Properly handles non-existent property requests")
+        
+        print("\n--- Property Management Testing Complete ---")
+
+    def test_community_board_endpoints(self):
+        """Test the new Community Board API endpoints"""
+        print("\n=== TESTING COMMUNITY BOARD API ENDPOINTS ===")
+        
+        # 1. SUCCESS STORIES TESTING
+        print("\n--- Testing Success Stories ---")
+        
+        # Test GET /api/success-stories (should return 3 sample stories)
+        success, stories = self.run_test("Get All Success Stories", "GET", "success-stories", 200)
+        story_id = None
+        if success and stories:
+            print(f"   Found {len(stories)} success stories")
+            if len(stories) >= 3:
+                print("   ✅ Expected 3 sample stories found")
+            else:
+                print(f"   ⚠️  Expected 3 stories, found {len(stories)}")
+            story_id = stories[0].get('id') if stories else None
+        
+        # Test GET /api/success-stories?featured_only=true
+        success, featured_stories = self.run_test(
+            "Get Featured Success Stories", 
+            "GET", 
+            "success-stories?featured_only=true", 
+            200
+        )
+        if success:
+            print(f"   Found {len(featured_stories) if isinstance(featured_stories, list) else 0} featured stories")
+        
+        # Test POST /api/success-stories (create new story)
+        test_story_data = {
+            "title": "Test Success Story - API Testing",
+            "resident_name": "Test Resident",
+            "story_text": "This is a test success story created during API testing. It demonstrates the API functionality for creating new success stories.",
+            "program_name": "Test Program",
+            "is_featured": False
+        }
+        
+        success, new_story = self.run_test(
+            "Create New Success Story",
+            "POST",
+            "success-stories",
+            200,
+            data=test_story_data
+        )
+        
+        created_story_id = None
+        if success and new_story:
+            created_story_id = new_story.get('id')
+            print(f"   Created story with ID: {created_story_id}")
+        
+        # Test PUT /api/success-stories/{story_id} (update story)
+        if created_story_id:
+            update_data = {
+                "title": "Updated Test Success Story",
+                "is_featured": True,
+                "story_text": "This story has been updated during API testing."
+            }
+            
+            success, updated_story = self.run_test(
+                "Update Success Story",
+                "PUT",
+                f"success-stories/{created_story_id}",
+                200,
+                data=update_data
+            )
+            
+            if success:
+                print(f"   Updated story - Featured: {updated_story.get('is_featured', False)}")
+        
+        # Test DELETE /api/success-stories/{story_id}
+        if created_story_id:
+            success, response = self.run_test(
+                "Delete Success Story",
+                "DELETE",
+                f"success-stories/{created_story_id}",
+                200
+            )
+            
+            if success:
+                print("   ✅ Success story deleted successfully")
+        
+        # 2. COMMUNITY EVENTS TESTING
+        print("\n--- Testing Community Events ---")
+        
+        # Test GET /api/community-events (should return 3 sample events)
+        success, events = self.run_test("Get All Community Events", "GET", "community-events", 200)
+        event_id = None
+        if success and events:
+            print(f"   Found {len(events)} community events")
+            if len(events) >= 3:
+                print("   ✅ Expected 3 sample events found")
+            else:
+                print(f"   ⚠️  Expected 3 events, found {len(events)}")
+            event_id = events[0].get('id') if events else None
+        
+        # Test GET /api/community-events?upcoming_only=true
+        success, upcoming_events = self.run_test(
+            "Get Upcoming Community Events", 
+            "GET", 
+            "community-events?upcoming_only=true", 
+            200
+        )
+        if success:
+            print(f"   Found {len(upcoming_events) if isinstance(upcoming_events, list) else 0} upcoming events")
+        
+        # Test GET /api/community-events/{event_id}
+        if event_id:
+            success, event_details = self.run_test(
+                "Get Event Details", 
+                "GET", 
+                f"community-events/{event_id}", 
+                200
+            )
+            if success and event_details:
+                print(f"   Event Title: {event_details.get('title', 'Unknown')}")
+                print(f"   Event Type: {event_details.get('event_type', 'Unknown')}")
+        
+        # Test POST /api/community-events (create new event with future date)
+        from datetime import datetime, timedelta
+        future_date = (datetime.utcnow() + timedelta(days=30)).isoformat() + "Z"
+        
+        test_event_data = {
+            "title": "Test Community Event - API Testing",
+            "description": "A test community event created during API testing",
+            "event_date": future_date,
+            "location": "Test Location, Danville, VA",
+            "event_type": "workshop",
+            "organizer": "DNDC Test",
+            "contact_email": "test@dndcva.org",
+            "registration_required": True,
+            "max_attendees": 25
+        }
+        
+        success, new_event = self.run_test(
+            "Create New Community Event",
+            "POST",
+            "community-events",
+            200,
+            data=test_event_data
+        )
+        
+        created_event_id = None
+        if success and new_event:
+            created_event_id = new_event.get('id')
+            print(f"   Created event with ID: {created_event_id}")
+        
+        # Test POST /api/community-events/{event_id}/register (register for event)
+        if created_event_id:
+            success, response = self.run_test(
+                "Register for Event",
+                "POST",
+                f"community-events/{created_event_id}/register",
+                200
+            )
+            
+            if success:
+                print("   ✅ Event registration successful")
+        
+        # Test PUT /api/community-events/{event_id} (update event)
+        if created_event_id:
+            update_data = {
+                "title": "Updated Test Community Event",
+                "description": "This event has been updated during API testing",
+                "max_attendees": 30
+            }
+            
+            success, updated_event = self.run_test(
+                "Update Community Event",
+                "PUT",
+                f"community-events/{created_event_id}",
+                200,
+                data=update_data
+            )
+            
+            if success:
+                print(f"   Updated event - Max Attendees: {updated_event.get('max_attendees', 0)}")
+        
+        # Test DELETE /api/community-events/{event_id}
+        if created_event_id:
+            success, response = self.run_test(
+                "Delete Community Event",
+                "DELETE",
+                f"community-events/{created_event_id}",
+                200
+            )
+            
+            if success:
+                print("   ✅ Community event deleted successfully")
+        
+        # 3. TESTIMONIALS TESTING
+        print("\n--- Testing Testimonials ---")
+        
+        # Test GET /api/testimonials (should return 4 sample testimonials, approved only)
+        success, testimonials = self.run_test("Get All Testimonials", "GET", "testimonials", 200)
+        testimonial_id = None
+        if success and testimonials:
+            print(f"   Found {len(testimonials)} testimonials")
+            if len(testimonials) >= 4:
+                print("   ✅ Expected 4 sample testimonials found")
+            else:
+                print(f"   ⚠️  Expected 4 testimonials, found {len(testimonials)}")
+            
+            # Check if all returned testimonials are approved
+            approved_count = sum(1 for t in testimonials if t.get('is_approved', False))
+            print(f"   Approved testimonials: {approved_count}/{len(testimonials)}")
+            
+            testimonial_id = testimonials[0].get('id') if testimonials else None
+        
+        # Test POST /api/testimonials (submit new testimonial)
+        test_testimonial_data = {
+            "resident_name": "Test Resident",
+            "testimonial_text": "This is a test testimonial created during API testing. The DNDC services have been excellent!",
+            "program_name": "Test Program",
+            "rating": 5
+        }
+        
+        success, new_testimonial = self.run_test(
+            "Submit New Testimonial",
+            "POST",
+            "testimonials",
+            200,
+            data=test_testimonial_data
+        )
+        
+        created_testimonial_id = None
+        if success and new_testimonial:
+            created_testimonial_id = new_testimonial.get('id')
+            print(f"   Created testimonial with ID: {created_testimonial_id}")
+            print(f"   Approval Status: {new_testimonial.get('is_approved', False)}")
+        
+        # Test PUT /api/testimonials/{testimonial_id}/approve (approve testimonial)
+        if created_testimonial_id:
+            success, response = self.run_test(
+                "Approve Testimonial",
+                "PUT",
+                f"testimonials/{created_testimonial_id}/approve",
+                200
+            )
+            
+            if success:
+                print("   ✅ Testimonial approved successfully")
+        
+        # Test DELETE /api/testimonials/{testimonial_id}
+        if created_testimonial_id:
+            success, response = self.run_test(
+                "Delete Testimonial",
+                "DELETE",
+                f"testimonials/{created_testimonial_id}",
+                200
+            )
+            
+            if success:
+                print("   ✅ Testimonial deleted successfully")
+        
+        # 4. Test error handling
+        print("\n--- Testing Community Board Error Handling ---")
+        
+        # Test getting non-existent story
+        fake_id = "00000000-0000-0000-0000-000000000000"
+        success, response = self.run_test(
+            "Get Non-existent Success Story",
+            "GET",
+            f"success-stories/{fake_id}",
+            404
+        )
+        
+        if success:
+            print("   ✅ Properly handles non-existent success story requests")
+        
+        print("\n--- Community Board Testing Complete ---")
+
+    def test_smart_notifications_endpoints(self):
+        """Test the new Smart Notifications API endpoints"""
+        print("\n=== TESTING SMART NOTIFICATIONS API ENDPOINTS ===")
+        
+        # 1. NOTIFICATIONS TESTING
+        print("\n--- Testing Notifications ---")
+        
+        # Test GET /api/notifications (should return 4 sample notifications)
+        success, notifications = self.run_test("Get All Notifications", "GET", "notifications", 200)
+        notification_id = None
+        if success and notifications:
+            print(f"   Found {len(notifications)} notifications")
+            if len(notifications) >= 4:
+                print("   ✅ Expected 4 sample notifications found")
+            else:
+                print(f"   ⚠️  Expected 4 notifications, found {len(notifications)}")
+            notification_id = notifications[0].get('id') if notifications else None
+            
+            # Check notification types and priorities
+            types = [n.get('notification_type') for n in notifications]
+            priorities = [n.get('priority') for n in notifications]
+            print(f"   Notification types found: {set(types)}")
+            print(f"   Priority levels found: {set(priorities)}")
+        
+        # Test GET /api/notifications?unread_only=true
+        success, unread_notifications = self.run_test(
+            "Get Unread Notifications", 
+            "GET", 
+            "notifications?unread_only=true", 
+            200
+        )
+        if success:
+            print(f"   Found {len(unread_notifications) if isinstance(unread_notifications, list) else 0} unread notifications")
+        
+        # Test GET /api/notifications/unread-count
+        success, unread_count = self.run_test(
+            "Get Unread Count", 
+            "GET", 
+            "notifications/unread-count", 
+            200
+        )
+        if success and unread_count:
+            print(f"   Unread count: {unread_count.get('count', 0)}")
+        
+        # Test POST /api/notifications (create new notification)
+        test_notification_data = {
+            "notification_type": "property_alert",
+            "title": "Test Property Alert - API Testing",
+            "message": "A new test property has been added to the system during API testing",
+            "priority": "high",
+            "related_item_type": "property"
+        }
+        
+        success, new_notification = self.run_test(
+            "Create New Notification",
+            "POST",
+            "notifications",
+            200,
+            data=test_notification_data
+        )
+        
+        created_notification_id = None
+        if success and new_notification:
+            created_notification_id = new_notification.get('id')
+            print(f"   Created notification with ID: {created_notification_id}")
+            print(f"   Notification Type: {new_notification.get('notification_type')}")
+            print(f"   Priority: {new_notification.get('priority')}")
+        
+        # Test PUT /api/notifications/{notification_id}/read (mark as read)
+        if created_notification_id:
+            success, response = self.run_test(
+                "Mark Notification as Read",
+                "PUT",
+                f"notifications/{created_notification_id}/read",
+                200
+            )
+            
+            if success:
+                print("   ✅ Notification marked as read successfully")
+        
+        # Test PUT /api/notifications/mark-all-read?user_id=test_user
+        success, response = self.run_test(
+            "Mark All Notifications as Read",
+            "PUT",
+            "notifications/mark-all-read?user_id=test_user",
+            200
+        )
+        
+        if success:
+            print("   ✅ All notifications marked as read successfully")
+        
+        # Test DELETE /api/notifications/{notification_id}
+        if created_notification_id:
+            success, response = self.run_test(
+                "Delete Notification",
+                "DELETE",
+                f"notifications/{created_notification_id}",
+                200
+            )
+            
+            if success:
+                print("   ✅ Notification deleted successfully")
+        
+        # 2. NOTIFICATION PREFERENCES TESTING
+        print("\n--- Testing Notification Preferences ---")
+        
+        test_user_id = "test_user"
+        
+        # Test GET /api/notification-preferences/test_user (should return default preferences)
+        success, preferences = self.run_test(
+            "Get User Notification Preferences", 
+            "GET", 
+            f"notification-preferences/{test_user_id}", 
+            200
+        )
+        if success and preferences:
+            print(f"   User ID: {preferences.get('user_id')}")
+            print(f"   Deadline Reminders: {preferences.get('deadline_reminders', False)}")
+            print(f"   Property Alerts: {preferences.get('property_alerts', False)}")
+            print(f"   Program Updates: {preferences.get('program_updates', False)}")
+            print(f"   General Announcements: {preferences.get('general_announcements', False)}")
+        
+        # Test PUT /api/notification-preferences/test_user (update preferences)
+        update_preferences_data = {
+            "deadline_reminders": False,
+            "property_alerts": True,
+            "program_updates": True,
+            "general_announcements": False,
+            "email_notifications": True,
+            "sms_notifications": False
+        }
+        
+        success, updated_preferences = self.run_test(
+            "Update User Notification Preferences",
+            "PUT",
+            f"notification-preferences/{test_user_id}",
+            200,
+            data=update_preferences_data
+        )
+        
+        if success and updated_preferences:
+            print(f"   Updated Deadline Reminders: {updated_preferences.get('deadline_reminders', False)}")
+            print(f"   Updated Email Notifications: {updated_preferences.get('email_notifications', False)}")
+        
+        # 3. Test notification filtering by user
+        print("\n--- Testing User-Specific Notifications ---")
+        
+        # Create a user-specific notification
+        user_notification_data = {
+            "user_id": test_user_id,
+            "notification_type": "deadline_reminder",
+            "title": "Personal Deadline Reminder - API Testing",
+            "message": "This is a user-specific notification created during API testing",
+            "priority": "normal"
+        }
+        
+        success, user_notification = self.run_test(
+            "Create User-Specific Notification",
+            "POST",
+            "notifications",
+            200,
+            data=user_notification_data
+        )
+        
+        if success and user_notification:
+            print(f"   Created user-specific notification for: {user_notification.get('user_id')}")
+        
+        # Test getting notifications for specific user
+        success, user_notifications = self.run_test(
+            "Get User-Specific Notifications",
+            "GET",
+            f"notifications?user_id={test_user_id}",
+            200
+        )
+        
+        if success:
+            print(f"   Found {len(user_notifications) if isinstance(user_notifications, list) else 0} notifications for user")
+        
+        # 4. Test error handling
+        print("\n--- Testing Smart Notifications Error Handling ---")
+        
+        # Test getting non-existent notification
+        fake_notification_id = "00000000-0000-0000-0000-000000000000"
+        success, response = self.run_test(
+            "Get Non-existent Notification",
+            "GET",
+            f"notifications/{fake_notification_id}",
+            404
+        )
+        
+        if success:
+            print("   ✅ Properly handles non-existent notification requests")
+        
+        # Test getting preferences for non-existent user
+        success, response = self.run_test(
+            "Get Preferences for Non-existent User",
+            "GET",
+            "notification-preferences/nonexistent_user",
+            200  # Should return default preferences
+        )
+        
+        if success:
+            print("   ✅ Properly handles preferences for new users (returns defaults)")
+        
+        print("\n--- Smart Notifications Testing Complete ---")
+
     def test_backend_health_and_status(self):
         """Test basic backend health and status endpoints"""
         print("\n=== TESTING BACKEND HEALTH & STATUS ===")
