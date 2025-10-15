@@ -1666,41 +1666,6 @@ async def delete_notification(notification_id: str):
         raise HTTPException(status_code=404, detail="Notification not found")
     return {"message": "Notification deleted successfully"}
 
-@api_router.get("/notifications/unread-count")
-async def get_unread_count(user_id: Optional[str] = None):
-    """Get count of unread notifications"""
-    # Filter out expired notifications
-    current_time = datetime.utcnow()
-    
-    # Build query based on user_id
-    if user_id:
-        query = {
-            "is_read": False,
-            "$and": [
-                {
-                    "$or": [{"user_id": user_id}, {"user_id": None}]
-                },
-                {
-                    "$or": [
-                        {"expires_at": None},
-                        {"expires_at": {"$gte": current_time}}
-                    ]
-                }
-            ]
-        }
-    else:
-        query = {
-            "user_id": None,
-            "is_read": False,
-            "$or": [
-                {"expires_at": None},
-                {"expires_at": {"$gte": current_time}}
-            ]
-        }
-    
-    count = await db.notifications.count_documents(query)
-    return {"unread_count": count}
-
 # Notification Preferences
 @api_router.get("/notification-preferences/{user_id}")
 async def get_notification_preferences(user_id: str):
