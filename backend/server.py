@@ -1634,14 +1634,28 @@ async def delete_notification(notification_id: str):
 @api_router.get("/notifications/unread-count")
 async def get_unread_count(user_id: Optional[str] = None):
     """Get count of unread notifications"""
-    query = {"$or": [{"user_id": user_id}, {"user_id": None}], "is_read": False} if user_id else {"user_id": None, "is_read": False}
-    
     # Filter out expired notifications
     current_time = datetime.utcnow()
-    query["$or"] = [
-        {"expires_at": None},
-        {"expires_at": {"$gte": current_time}}
-    ]
+    
+    # Build query based on user_id
+    if user_id:
+        query = {
+            "is_read": False,
+            "$or": [{"user_id": user_id}, {"user_id": None}],
+            "$or": [
+                {"expires_at": None},
+                {"expires_at": {"$gte": current_time}}
+            ]
+        }
+    else:
+        query = {
+            "user_id": None,
+            "is_read": False,
+            "$or": [
+                {"expires_at": None},
+                {"expires_at": {"$gte": current_time}}
+            ]
+        }
     
     count = await db.notifications.count_documents(query)
     return {"unread_count": count}
