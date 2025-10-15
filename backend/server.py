@@ -1587,6 +1587,41 @@ async def get_notifications(user_id: Optional[str] = None, unread_only: bool = F
     notifications = await db.notifications.find(query).sort("created_at", -1).limit(50).to_list(100)
     return [Notification(**notif) for notif in notifications]
 
+@api_router.get("/notifications/unread-count")
+async def get_unread_count(user_id: Optional[str] = None):
+    """Get count of unread notifications"""
+    # Filter out expired notifications
+    current_time = datetime.utcnow()
+    
+    # Build query based on user_id
+    if user_id:
+        query = {
+            "is_read": False,
+            "$and": [
+                {
+                    "$or": [{"user_id": user_id}, {"user_id": None}]
+                },
+                {
+                    "$or": [
+                        {"expires_at": None},
+                        {"expires_at": {"$gte": current_time}}
+                    ]
+                }
+            ]
+        }
+    else:
+        query = {
+            "user_id": None,
+            "is_read": False,
+            "$or": [
+                {"expires_at": None},
+                {"expires_at": {"$gte": current_time}}
+            ]
+        }
+    
+    count = await db.notifications.count_documents(query)
+    return {"unread_count": count}
+
 @api_router.get("/notifications/{notification_id}", response_model=Notification)
 async def get_notification(notification_id: str):
     """Get a specific notification"""
