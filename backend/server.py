@@ -858,14 +858,14 @@ async def calculate_utility_assistance(household_size: int, monthly_income: floa
 
 # Analytics and Usage Tracking Endpoints
 @api_router.post("/analytics/track")
-async def track_usage(event_type: str, page: str, user_session: str, metadata: dict = None):
+async def track_usage(metric_data: dict):
     """Track user interactions for analytics"""
     try:
         metric = UsageMetric(
-            event_type=event_type,
-            page=page,
-            user_session=user_session,
-            metadata=metadata or {}
+            event_type=metric_data.get("event_type"),
+            page=metric_data.get("page"),
+            user_session=metric_data.get("user_session"),
+            metadata=metric_data.get("metadata", {})
         )
         await db.usage_metrics.insert_one(metric.dict())
         return {"status": "tracked"}
