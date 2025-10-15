@@ -1641,10 +1641,16 @@ async def get_unread_count(user_id: Optional[str] = None):
     if user_id:
         query = {
             "is_read": False,
-            "$or": [{"user_id": user_id}, {"user_id": None}],
-            "$or": [
-                {"expires_at": None},
-                {"expires_at": {"$gte": current_time}}
+            "$and": [
+                {
+                    "$or": [{"user_id": user_id}, {"user_id": None}]
+                },
+                {
+                    "$or": [
+                        {"expires_at": None},
+                        {"expires_at": {"$gte": current_time}}
+                    ]
+                }
             ]
         }
     else:
