@@ -169,17 +169,8 @@ const CommunityBoard = ({ api, analytics }) => {
           )}
           <button
             onClick={() => analytics.trackButtonClick(`register_event_${selectedEvent.id}`, 'community_board')}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
-              color: 'white',
-              padding: '1rem',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
+            className="btn-primary"
+            style={{ width: '100%' }}
           >
             {selectedEvent.registration_required ? 'Register for Event' : 'Learn More'}
           </button>
