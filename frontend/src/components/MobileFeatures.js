@@ -124,7 +124,7 @@ const MobileFeatures = ({ api, analytics }) => {
                 maxWidth: '100%', 
                 maxHeight: '200px', 
                 borderRadius: '8px',
-                border: '1px solid #e2e8f0'
+                border: '1px solid var(--color-border)'
               }} 
             />
           </div>

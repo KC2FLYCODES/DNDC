@@ -127,10 +127,10 @@ const ProgramsTab = ({ api, analytics }) => {
         <div style={{ 
           textAlign: 'center', 
           padding: '3rem', 
-          color: '#718096',
+          color: 'var(--color-text-secondary)',
           background: 'white',
           borderRadius: '12px',
-          border: '1px solid #e2e8f0',
+          border: '1px solid var(--color-border)',
           marginTop: '1rem'
         }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📋</div>
@@ -144,7 +144,7 @@ const ProgramsTab = ({ api, analytics }) => {
           {programs.map(program => (
             <div key={program.id} style={{
               background: 'white',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--color-border)',
               borderRadius: '12px',
               overflow: 'hidden',
               boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
@@ -159,7 +159,7 @@ const ProgramsTab = ({ api, analytics }) => {
                 }}>
                   <div style={{
                     fontSize: '2.5rem',
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                    background: 'linear-gradient(135deg, var(--color-background) 0%, var(--color-border) 100%)',
                     borderRadius: '12px',
                     padding: '0.75rem',
                     minWidth: '60px',
@@ -177,7 +177,7 @@ const ProgramsTab = ({ api, analytics }) => {
                       {program.name}
                     </h4>
                     <p style={{ 
-                      color: '#4a5568', 
+                      color: 'var(--color-text-primary)', 
                       lineHeight: '1.6',
                       marginBottom: '1rem'
                     }}>
@@ -234,8 +234,8 @@ const ProgramsTab = ({ api, analytics }) => {
                     onClick={() => setSelectedProgram(program)}
                     style={{
                       background: 'white',
-                      border: '1px solid #e2e8f0',
-                      color: '#4a5568',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
                       padding: '0.75rem 1.5rem',
                       borderRadius: '8px',
                       fontSize: '0.9rem',
@@ -244,12 +244,12 @@ const ProgramsTab = ({ api, analytics }) => {
                       transition: 'all 0.2s ease'
                     }}
                     onMouseOver={(e) => {
-                      e.target.style.background = '#f8fafc';
+                      e.target.style.background = 'var(--color-background)';
                       e.target.style.borderColor = '#cbd5e0';
                     }}
                     onMouseOut={(e) => {
                       e.target.style.background = 'white';
-                      e.target.style.borderColor = '#e2e8f0';
+                      e.target.style.borderColor = 'var(--color-border)';
                     }}
                   >
                     📖 Learn More
@@ -257,7 +257,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   <button
                     onClick={() => handleApplyNow(program)}
                     style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                       border: 'none',
                       color: 'white',
                       padding: '0.75rem 1.5rem',
@@ -310,7 +310,7 @@ const ProgramsTab = ({ api, analytics }) => {
           }}>
             <div style={{ 
               padding: '2rem',
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -321,7 +321,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   <h3 style={{ color: '#2d3748', fontSize: '1.5rem', margin: 0 }}>
                     {selectedProgram.name}
                   </h3>
-                  <div style={{ color: '#718096', fontSize: '0.9rem', textTransform: 'capitalize' }}>
+                  <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', textTransform: 'capitalize' }}>
                     {selectedProgram.type.replace('_', ' ')} Program
                   </div>
                 </div>
@@ -333,7 +333,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: '#718096'
+                  color: 'var(--color-text-secondary)'
                 }}
               >
                 ✕
@@ -344,7 +344,7 @@ const ProgramsTab = ({ api, analytics }) => {
               {/* Description */}
               <div style={{ marginBottom: '2rem' }}>
                 <h4 style={{ color: '#2d3748', marginBottom: '1rem' }}>Program Description</h4>
-                <p style={{ color: '#4a5568', lineHeight: '1.6' }}>
+                <p style={{ color: 'var(--color-text-primary)', lineHeight: '1.6' }}>
                   {selectedProgram.description}
                 </p>
               </div>
@@ -353,7 +353,7 @@ const ProgramsTab = ({ api, analytics }) => {
               {selectedProgram.eligibility_criteria && selectedProgram.eligibility_criteria.length > 0 && (
                 <div style={{ marginBottom: '2rem' }}>
                   <h4 style={{ color: '#2d3748', marginBottom: '1rem' }}>Eligibility Requirements</h4>
-                  <ul style={{ color: '#4a5568', lineHeight: '1.8', paddingLeft: '1.5rem' }}>
+                  <ul style={{ color: 'var(--color-text-primary)', lineHeight: '1.8', paddingLeft: '1.5rem' }}>
                     {selectedProgram.eligibility_criteria.map((criteria, index) => (
                       <li key={index}>{criteria.criteria}</li>
                     ))}
@@ -366,8 +366,8 @@ const ProgramsTab = ({ api, analytics }) => {
                 <div style={{ marginBottom: '2rem' }}>
                   <h4 style={{ color: '#2d3748', marginBottom: '1rem' }}>Financial Terms</h4>
                   <div style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
+                    background: 'var(--color-background)',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     padding: '1.5rem',
                     display: 'grid',
@@ -377,25 +377,25 @@ const ProgramsTab = ({ api, analytics }) => {
                     {selectedProgram.financial_terms.maximum_amount && (
                       <div>
                         <div style={{ fontWeight: '600', color: '#2d3748' }}>Maximum Amount</div>
-                        <div style={{ color: '#4a5568' }}>{formatCurrency(selectedProgram.financial_terms.maximum_amount)}</div>
+                        <div style={{ color: 'var(--color-text-primary)' }}>{formatCurrency(selectedProgram.financial_terms.maximum_amount)}</div>
                       </div>
                     )}
                     {selectedProgram.financial_terms.loan_term && (
                       <div>
                         <div style={{ fontWeight: '600', color: '#2d3748' }}>Loan Term</div>
-                        <div style={{ color: '#4a5568' }}>{selectedProgram.financial_terms.loan_term} years</div>
+                        <div style={{ color: 'var(--color-text-primary)' }}>{selectedProgram.financial_terms.loan_term} years</div>
                       </div>
                     )}
                     {selectedProgram.financial_terms.interest_rate !== undefined && (
                       <div>
                         <div style={{ fontWeight: '600', color: '#2d3748' }}>Interest Rate</div>
-                        <div style={{ color: '#4a5568' }}>{selectedProgram.financial_terms.interest_rate}%</div>
+                        <div style={{ color: 'var(--color-text-primary)' }}>{selectedProgram.financial_terms.interest_rate}%</div>
                       </div>
                     )}
                     {selectedProgram.financial_terms.forgiveness_structure && (
                       <div style={{ gridColumn: '1 / -1' }}>
                         <div style={{ fontWeight: '600', color: '#2d3748' }}>Forgiveness Structure</div>
-                        <div style={{ color: '#4a5568' }}>{selectedProgram.financial_terms.forgiveness_structure}</div>
+                        <div style={{ color: 'var(--color-text-primary)' }}>{selectedProgram.financial_terms.forgiveness_structure}</div>
                       </div>
                     )}
                   </div>
@@ -429,13 +429,13 @@ const ProgramsTab = ({ api, analytics }) => {
                   <h4 style={{ color: '#2d3748', marginBottom: '1rem' }}>Frequently Asked Questions</h4>
                   {selectedProgram.faqs.map((faq, index) => (
                     <div key={index} style={{
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       marginBottom: '1rem',
                       overflow: 'hidden'
                     }}>
                       <div style={{
-                        background: '#f8fafc',
+                        background: 'var(--color-background)',
                         padding: '1rem',
                         fontWeight: '600',
                         color: '#2d3748'
@@ -444,7 +444,7 @@ const ProgramsTab = ({ api, analytics }) => {
                       </div>
                       <div style={{
                         padding: '1rem',
-                        color: '#4a5568',
+                        color: 'var(--color-text-primary)',
                         lineHeight: '1.6'
                       }}>
                         {faq.answer}
@@ -459,7 +459,7 @@ const ProgramsTab = ({ api, analytics }) => {
                 <button
                   onClick={() => handleApplyNow(selectedProgram)}
                   style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                     border: 'none',
                     color: 'white',
                     padding: '1rem 2rem',
@@ -502,7 +502,7 @@ const ProgramsTab = ({ api, analytics }) => {
           }}>
             <div style={{ 
               padding: '2rem',
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -511,7 +511,7 @@ const ProgramsTab = ({ api, analytics }) => {
                 <h3 style={{ color: '#2d3748', fontSize: '1.5rem', margin: 0 }}>
                   Apply for {selectedProgram.name}
                 </h3>
-                <div style={{ color: '#718096', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
                   Complete the form below to submit your application
                 </div>
               </div>
@@ -525,7 +525,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: '#718096'
+                  color: 'var(--color-text-secondary)'
                 }}
               >
                 ✕
@@ -553,7 +553,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   style={{
                     width: '100%',
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem'
                   }}
@@ -581,7 +581,7 @@ const ProgramsTab = ({ api, analytics }) => {
                     style={{
                       width: '100%',
                       padding: '1rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '1rem'
                     }}
@@ -606,7 +606,7 @@ const ProgramsTab = ({ api, analytics }) => {
                     style={{
                       width: '100%',
                       padding: '1rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '1rem'
                     }}
@@ -636,7 +636,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   style={{
                     width: '100%',
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem',
                     resize: 'vertical'
@@ -665,8 +665,8 @@ const ProgramsTab = ({ api, analytics }) => {
                   }}
                   style={{
                     background: 'white',
-                    border: '1px solid #e2e8f0',
-                    color: '#4a5568',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
                     padding: '1rem 1.5rem',
                     borderRadius: '8px',
                     fontSize: '0.9rem',
@@ -680,7 +680,7 @@ const ProgramsTab = ({ api, analytics }) => {
                   type="submit"
                   disabled={submitting}
                   style={{
-                    background: submitting ? '#cbd5e0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: submitting ? '#cbd5e0' : 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                     border: 'none',
                     color: 'white',
                     padding: '1rem 1.5rem',

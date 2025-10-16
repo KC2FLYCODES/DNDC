@@ -20,8 +20,8 @@ export const TenantProvider = ({ children }) => {
     slug: currentOrganization,
     logoUrl: 'https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg',
     themeColors: {
-      primary: '#667eea',
-      secondary: '#764ba2'
+      primary: 'var(--color-primary)',
+      secondary: 'var(--color-primary-dark)'
     },
     featuresEnabled: {
       applications: true,
