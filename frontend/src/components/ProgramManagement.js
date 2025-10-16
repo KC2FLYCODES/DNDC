@@ -211,14 +211,14 @@ const ProgramManagement = ({ api }) => {
           <h2 style={{ color: '#2d3748', margin: 0, marginBottom: '0.5rem' }}>
             Program Management
           </h2>
-          <p style={{ color: '#718096', margin: 0 }}>
+          <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>
             Create and manage housing assistance programs for DNDC
           </p>
         </div>
         <button
           onClick={() => setShowProgramForm(true)}
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
             color: 'white',
             border: 'none',
             padding: '0.75rem 1.5rem',
@@ -249,19 +249,19 @@ const ProgramManagement = ({ api }) => {
         display: 'flex',
         gap: '0.5rem',
         marginBottom: '2rem',
-        borderBottom: '1px solid #e2e8f0'
+        borderBottom: '1px solid var(--color-border)'
       }}>
         <button
           onClick={() => setSelectedTab('programs')}
           style={{
-            background: selectedTab === 'programs' ? '#f8fafc' : 'transparent',
+            background: selectedTab === 'programs' ? 'var(--color-background)' : 'transparent',
             border: 'none',
             padding: '1rem 1.5rem',
             borderRadius: '8px 8px 0 0',
             fontWeight: '600',
-            color: selectedTab === 'programs' ? '#667eea' : '#718096',
+            color: selectedTab === 'programs' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
             cursor: 'pointer',
-            borderBottom: selectedTab === 'programs' ? '2px solid #667eea' : '2px solid transparent'
+            borderBottom: selectedTab === 'programs' ? '2px solid var(--color-primary)' : '2px solid transparent'
           }}
         >
           📋 Programs ({programs.length})
@@ -269,14 +269,14 @@ const ProgramManagement = ({ api }) => {
         <button
           onClick={() => setSelectedTab('applications')}
           style={{
-            background: selectedTab === 'applications' ? '#f8fafc' : 'transparent',
+            background: selectedTab === 'applications' ? 'var(--color-background)' : 'transparent',
             border: 'none',
             padding: '1rem 1.5rem',
             borderRadius: '8px 8px 0 0',
             fontWeight: '600',
-            color: selectedTab === 'applications' ? '#667eea' : '#718096',
+            color: selectedTab === 'applications' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
             cursor: 'pointer',
-            borderBottom: selectedTab === 'applications' ? '2px solid #667eea' : '2px solid transparent'
+            borderBottom: selectedTab === 'applications' ? '2px solid var(--color-primary)' : '2px solid transparent'
           }}
         >
           📄 Applications ({applications.length})
@@ -289,7 +289,7 @@ const ProgramManagement = ({ api }) => {
           {programs.map(program => (
             <div key={program.id} style={{
               background: 'white',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--color-border)',
               borderRadius: '12px',
               padding: '1.5rem'
             }}>
@@ -322,7 +322,7 @@ const ProgramManagement = ({ api }) => {
                       {program.status}
                     </span>
                   </div>
-                  <p style={{ color: '#718096', margin: 0, fontSize: '0.9rem' }}>
+                  <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
                     {program.description?.substring(0, 150)}...
                   </p>
                 </div>
@@ -331,8 +331,8 @@ const ProgramManagement = ({ api }) => {
                     onClick={() => handleEditProgram(program)}
                     style={{
                       background: 'white',
-                      border: '1px solid #e2e8f0',
-                      color: '#4a5568',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
                       padding: '0.5rem 1rem',
                       borderRadius: '6px',
                       fontSize: '0.8rem',
@@ -360,8 +360,8 @@ const ProgramManagement = ({ api }) => {
               
               {program.financial_terms && (
                 <div style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '8px',
                   padding: '1rem',
                   display: 'grid',
@@ -372,7 +372,7 @@ const ProgramManagement = ({ api }) => {
                   {program.financial_terms.maximum_amount && (
                     <div>
                       <div style={{ fontWeight: '600', color: '#2d3748' }}>Max Amount</div>
-                      <div style={{ color: '#4a5568' }}>
+                      <div style={{ color: 'var(--color-text-primary)' }}>
                         ${program.financial_terms.maximum_amount?.toLocaleString()}
                       </div>
                     </div>
@@ -380,13 +380,13 @@ const ProgramManagement = ({ api }) => {
                   {program.financial_terms.loan_term && (
                     <div>
                       <div style={{ fontWeight: '600', color: '#2d3748' }}>Term</div>
-                      <div style={{ color: '#4a5568' }}>{program.financial_terms.loan_term} years</div>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{program.financial_terms.loan_term} years</div>
                     </div>
                   )}
                   {program.financial_terms.interest_rate !== undefined && (
                     <div>
                       <div style={{ fontWeight: '600', color: '#2d3748' }}>Rate</div>
-                      <div style={{ color: '#4a5568' }}>{program.financial_terms.interest_rate}%</div>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{program.financial_terms.interest_rate}%</div>
                     </div>
                   )}
                 </div>
@@ -402,7 +402,7 @@ const ProgramManagement = ({ api }) => {
           {applications.map(app => (
             <div key={app.id} style={{
               background: 'white',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--color-border)',
               borderRadius: '12px',
               padding: '1.5rem'
             }}>
@@ -416,7 +416,7 @@ const ProgramManagement = ({ api }) => {
                   <h4 style={{ color: '#2d3748', margin: 0, marginBottom: '0.25rem' }}>
                     {app.applicant_name}
                   </h4>
-                  <p style={{ color: '#718096', margin: 0, fontSize: '0.9rem' }}>
+                  <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
                     {app.applicant_email} • Submitted {new Date(app.submitted_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -437,10 +437,10 @@ const ProgramManagement = ({ api }) => {
               
               {app.application_data?.description && (
                 <p style={{
-                  color: '#4a5568',
+                  color: 'var(--color-text-primary)',
                   fontSize: '0.9rem',
                   lineHeight: '1.5',
-                  background: '#f8fafc',
+                  background: 'var(--color-background)',
                   padding: '1rem',
                   borderRadius: '8px',
                   margin: 0
@@ -478,7 +478,7 @@ const ProgramManagement = ({ api }) => {
           }}>
             <div style={{
               padding: '2rem',
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -493,7 +493,7 @@ const ProgramManagement = ({ api }) => {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: '#718096'
+                  color: 'var(--color-text-secondary)'
                 }}
               >
                 ✕
@@ -517,7 +517,7 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px'
                     }}
                   />
@@ -535,7 +535,7 @@ const ProgramManagement = ({ api }) => {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px'
                       }}
                     >
@@ -556,7 +556,7 @@ const ProgramManagement = ({ api }) => {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px'
                       }}
                     >
@@ -579,13 +579,13 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px',
                       resize: 'vertical'
                     }}
                     maxLength={2000}
                   />
-                  <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.25rem' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
                     {programData.description.length}/2000 characters
                   </div>
                 </div>
@@ -602,7 +602,7 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px'
                     }}
                   />
@@ -619,7 +619,7 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px'
                     }}
                   />
@@ -648,7 +648,7 @@ const ProgramManagement = ({ api }) => {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px'
                       }}
                     />
@@ -670,7 +670,7 @@ const ProgramManagement = ({ api }) => {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px'
                       }}
                     />
@@ -695,7 +695,7 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px'
                     }}
                   />
@@ -719,7 +719,7 @@ const ProgramManagement = ({ api }) => {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '6px',
                       resize: 'vertical'
                     }}
@@ -768,7 +768,7 @@ const ProgramManagement = ({ api }) => {
                       style={{
                         flex: 1,
                         padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px'
                       }}
                     />
@@ -847,7 +847,7 @@ const ProgramManagement = ({ api }) => {
 
                 {programData.faqs.map((faq, index) => (
                   <div key={index} style={{ 
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     padding: '1rem',
                     marginBottom: '1rem'
@@ -861,7 +861,7 @@ const ProgramManagement = ({ api }) => {
                         style={{
                           width: '100%',
                           padding: '0.5rem',
-                          border: '1px solid #e2e8f0',
+                          border: '1px solid var(--color-border)',
                           borderRadius: '4px',
                           fontWeight: '600'
                         }}
@@ -876,7 +876,7 @@ const ProgramManagement = ({ api }) => {
                         style={{
                           flex: 1,
                           padding: '0.5rem',
-                          border: '1px solid #e2e8f0',
+                          border: '1px solid var(--color-border)',
                           borderRadius: '4px',
                           resize: 'vertical'
                         }}
@@ -909,8 +909,8 @@ const ProgramManagement = ({ api }) => {
                   onClick={resetForm}
                   style={{
                     background: 'white',
-                    border: '1px solid #e2e8f0',
-                    color: '#4a5568',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
                     padding: '1rem 1.5rem',
                     borderRadius: '8px',
                     fontWeight: '600',
@@ -922,7 +922,7 @@ const ProgramManagement = ({ api }) => {
                 <button
                   type="submit"
                   style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                     border: 'none',
                     color: 'white',
                     padding: '1rem 1.5rem',
