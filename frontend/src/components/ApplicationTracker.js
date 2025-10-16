@@ -67,7 +67,7 @@ const ApplicationTracker = ({ api }) => {
   const getStatusColor = (status) => {
     const colors = {
       'submitted': '#f39c12',
-      'under_review': '#3498db',
+      'under_review': 'var(--color-accent)',
       'approved': '#27ae60',
       'denied': '#e74c3c'
     };

@@ -62,7 +62,7 @@ const AlertsTab = ({ api }) => {
         </div>
         
         {alerts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📢</div>
             <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
               No alerts at this time
@@ -70,7 +70,7 @@ const AlertsTab = ({ api }) => {
             <div>Check back regularly for new opportunities and updates</div>
           </div>
         ) : (
-          <div style={{ marginBottom: '1rem', color: '#4a5568', fontWeight: '500' }}>
+          <div style={{ marginBottom: '1rem', color: 'var(--color-text-primary)', fontWeight: '500' }}>
             {alerts.length} active alert{alerts.length !== 1 ? 's' : ''}
           </div>
         )}

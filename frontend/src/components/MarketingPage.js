@@ -112,7 +112,7 @@ const MarketingPage = () => {
     <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       {/* Hero Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
         color: 'white',
         padding: '4rem 2rem',
         textAlign: 'center'
@@ -140,7 +140,7 @@ const MarketingPage = () => {
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button style={{
               background: 'white',
-              color: '#667eea',
+              color: 'var(--color-primary)',
               border: 'none',
               padding: '1rem 2rem',
               borderRadius: '8px',
@@ -168,7 +168,7 @@ const MarketingPage = () => {
       </div>
 
       {/* Value Proposition */}
-      <div style={{ padding: '4rem 2rem', background: '#f8fafc' }}>
+      <div style={{ padding: '4rem 2rem', background: 'var(--color-background)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: '#2d3748' }}>
             Built by CDCs, for CDCs
@@ -187,7 +187,7 @@ const MarketingPage = () => {
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
               <h3 style={{ color: '#2d3748', marginBottom: '1rem' }}>Launch in Days, Not Months</h3>
-              <p style={{ color: '#718096', lineHeight: '1.6' }}>
+              <p style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
                 Skip expensive custom development. Get a proven platform that's already serving 
                 residents successfully at DNDC.
               </p>
@@ -200,7 +200,7 @@ const MarketingPage = () => {
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💰</div>
               <h3 style={{ color: '#2d3748', marginBottom: '1rem' }}>90% Cost Savings</h3>
-              <p style={{ color: '#718096', lineHeight: '1.6' }}>
+              <p style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
                 Custom development costs $50k-200k+. Our platform delivers the same 
                 functionality at a fraction of the cost.
               </p>
@@ -213,7 +213,7 @@ const MarketingPage = () => {
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
               <h3 style={{ color: '#2d3748', marginBottom: '1rem' }}>CDC-Specific Features</h3>
-              <p style={{ color: '#718096', lineHeight: '1.6' }}>
+              <p style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
                 Every feature is designed for CDC workflows. Housing applications, 
                 resource management, and resident services built-in.
               </p>
@@ -241,8 +241,8 @@ const MarketingPage = () => {
           }}>
             {features.map((feature, index) => (
               <div key={index} style={{
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                background: 'var(--color-background)',
+                border: '1px solid var(--color-border)',
                 borderRadius: '12px',
                 padding: '2rem',
                 transition: 'transform 0.2s ease'
@@ -274,9 +274,9 @@ const MarketingPage = () => {
                   {feature.items.map((item, itemIndex) => (
                     <li key={itemIndex} style={{
                       padding: '0.5rem 0',
-                      color: '#4a5568',
+                      color: 'var(--color-text-primary)',
                       lineHeight: '1.5',
-                      borderBottom: itemIndex < feature.items.length - 1 ? '1px solid #e2e8f0' : 'none',
+                      borderBottom: itemIndex < feature.items.length - 1 ? '1px solid var(--color-border)' : 'none',
                       display: 'flex',
                       alignItems: 'flex-start',
                       gap: '0.5rem'
@@ -293,7 +293,7 @@ const MarketingPage = () => {
       </div>
 
       {/* Pricing Section */}
-      <div style={{ padding: '4rem 2rem', background: '#f8fafc' }}>
+      <div style={{ padding: '4rem 2rem', background: 'var(--color-background)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: '#2d3748' }}>
             Simple, Transparent Pricing
@@ -310,13 +310,13 @@ const MarketingPage = () => {
               padding: '2rem', 
               borderRadius: '12px',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              border: '2px solid #e2e8f0'
+              border: '2px solid var(--color-border)'
             }}>
               <h3 style={{ color: '#2d3748', fontSize: '1.5rem', marginBottom: '1rem' }}>Starter</h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#667eea', marginBottom: '1rem' }}>
-                $149<span style={{ fontSize: '1rem', color: '#718096' }}>/month</span>
+              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--color-primary)', marginBottom: '1rem' }}>
+                $149<span style={{ fontSize: '1rem', color: 'var(--color-text-secondary)' }}>/month</span>
               </div>
-              <ul style={{ textAlign: 'left', color: '#4a5568', lineHeight: '2' }}>
+              <ul style={{ textAlign: 'left', color: 'var(--color-text-primary)', lineHeight: '2' }}>
                 <li>✓ Complete platform access</li>
                 <li>✓ Up to 1,000 residents</li>
                 <li>✓ Custom domain setup</li>
@@ -329,7 +329,7 @@ const MarketingPage = () => {
               padding: '2rem', 
               borderRadius: '12px',
               boxShadow: '0 8px 20px rgba(102, 126, 234, 0.2)',
-              border: '2px solid #667eea',
+              border: '2px solid var(--color-primary)',
               position: 'relative'
             }}>
               <div style={{
@@ -337,7 +337,7 @@ const MarketingPage = () => {
                 top: '-12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: '#667eea',
+                background: 'var(--color-primary)',
                 color: 'white',
                 padding: '0.5rem 1rem',
                 borderRadius: '20px',
@@ -347,10 +347,10 @@ const MarketingPage = () => {
                 Most Popular
               </div>
               <h3 style={{ color: '#2d3748', fontSize: '1.5rem', marginBottom: '1rem' }}>Professional</h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#667eea', marginBottom: '1rem' }}>
-                $299<span style={{ fontSize: '1rem', color: '#718096' }}>/month</span>
+              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--color-primary)', marginBottom: '1rem' }}>
+                $299<span style={{ fontSize: '1rem', color: 'var(--color-text-secondary)' }}>/month</span>
               </div>
-              <ul style={{ textAlign: 'left', color: '#4a5568', lineHeight: '2' }}>
+              <ul style={{ textAlign: 'left', color: 'var(--color-text-primary)', lineHeight: '2' }}>
                 <li>✓ Everything in Starter</li>
                 <li>✓ Up to 5,000 residents</li>
                 <li>✓ Priority phone support</li>
@@ -364,13 +364,13 @@ const MarketingPage = () => {
               padding: '2rem', 
               borderRadius: '12px',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              border: '2px solid #e2e8f0'
+              border: '2px solid var(--color-border)'
             }}>
               <h3 style={{ color: '#2d3748', fontSize: '1.5rem', marginBottom: '1rem' }}>Enterprise</h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#667eea', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--color-primary)', marginBottom: '1rem' }}>
                 Custom
               </div>
-              <ul style={{ textAlign: 'left', color: '#4a5568', lineHeight: '2' }}>
+              <ul style={{ textAlign: 'left', color: 'var(--color-text-primary)', lineHeight: '2' }}>
                 <li>✓ Unlimited residents</li>
                 <li>✓ Custom integrations</li>
                 <li>✓ Dedicated support</li>
@@ -397,7 +397,7 @@ const MarketingPage = () => {
           <p style={{ 
             textAlign: 'center', 
             fontSize: '1.2rem', 
-            color: '#718096', 
+            color: 'var(--color-text-secondary)', 
             marginBottom: '3rem' 
           }}>
             Schedule a personalized demo to see how our platform can transform 
@@ -406,10 +406,10 @@ const MarketingPage = () => {
           
           {!demoRequested ? (
             <form onSubmit={handleDemoRequest} style={{ 
-              background: '#f8fafc', 
+              background: 'var(--color-background)', 
               padding: '2rem', 
               borderRadius: '12px',
-              border: '1px solid #e2e8f0'
+              border: '1px solid var(--color-border)'
             }}>
               <div style={{ 
                 display: 'grid', 
@@ -425,7 +425,7 @@ const MarketingPage = () => {
                   onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
                   style={{
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem'
                   }}
@@ -438,7 +438,7 @@ const MarketingPage = () => {
                   onChange={(e) => setContactForm({...contactForm, organization: e.target.value})}
                   style={{
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem'
                   }}
@@ -458,7 +458,7 @@ const MarketingPage = () => {
                   onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
                   style={{
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem'
                   }}
@@ -470,7 +470,7 @@ const MarketingPage = () => {
                   onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
                   style={{
                     padding: '1rem',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: '8px',
                     fontSize: '1rem'
                   }}
@@ -484,7 +484,7 @@ const MarketingPage = () => {
                 style={{
                   width: '100%',
                   padding: '1rem',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '8px',
                   fontSize: '1rem',
                   marginBottom: '1rem',
@@ -494,7 +494,7 @@ const MarketingPage = () => {
               <button
                 type="submit"
                 style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                   color: 'white',
                   border: 'none',
                   padding: '1rem 2rem',
