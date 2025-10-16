@@ -99,7 +99,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>
           🗺️ Neighborhood Property Map
         </h2>
-        <p style={{ color: '#718096', fontSize: '1rem' }}>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>
           Explore available housing opportunities in the Danville area
         </p>
       </div>
@@ -124,7 +124,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 width: '100%',
                 padding: '0.5rem',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
                 fontSize: '0.95rem'
               }}
             >
@@ -144,7 +144,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 width: '100%',
                 padding: '0.5rem',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
                 fontSize: '0.95rem'
               }}
             >
@@ -170,7 +170,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 width: '100%',
                 padding: '0.5rem',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
                 fontSize: '0.95rem'
               }}
             />
@@ -189,7 +189,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 width: '100%',
                 padding: '0.5rem',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
                 fontSize: '0.95rem'
               }}
             />
@@ -200,7 +200,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
           onClick={applyFilters}
           style={{
             marginTop: '1rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
             color: 'white',
             padding: '0.75rem 2rem',
             borderRadius: '8px',
@@ -218,7 +218,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
       </div>
 
       {loading && (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
           Loading properties...
         </div>
       )}
@@ -273,10 +273,10 @@ const NeighborhoodMap = ({ api, analytics }) => {
                       <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                         {property.title}
                       </h3>
-                      <p style={{ color: '#718096', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                      <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                         {property.address}, {property.city}
                       </p>
-                      <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#667eea', marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
                         {formatPrice(property)}
                       </p>
                       <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
@@ -285,7 +285,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                       <button
                         onClick={() => setSelectedProperty(property)}
                         style={{
-                          background: '#667eea',
+                          background: 'var(--color-primary)',
                           color: 'white',
                           padding: '0.5rem 1rem',
                           borderRadius: '6px',
@@ -318,7 +318,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#667eea',
+                    color: 'var(--color-primary)',
                     cursor: 'pointer',
                     marginBottom: '1rem',
                     fontSize: '0.9rem'
@@ -332,10 +332,10 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 </h2>
                 
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea', marginBottom: '0.5rem' }}>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
                     {formatPrice(selectedProperty)}
                   </p>
-                  <p style={{ color: '#718096', fontSize: '0.95rem' }}>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
                     📍 {selectedProperty.address}, {selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip_code}
                   </p>
                 </div>
@@ -343,21 +343,21 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 <div style={{ marginBottom: '1.5rem', padding: '1rem', background: '#f7fafc', borderRadius: '8px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                     <div>
-                      <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.25rem' }}>Bedrooms</p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>Bedrooms</p>
                       <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>🛏️ {selectedProperty.bedrooms}</p>
                     </div>
                     <div>
-                      <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.25rem' }}>Bathrooms</p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>Bathrooms</p>
                       <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>🚿 {selectedProperty.bathrooms}</p>
                     </div>
                     {selectedProperty.square_feet && (
                       <div>
-                        <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.25rem' }}>Square Feet</p>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>Square Feet</p>
                         <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>📐 {selectedProperty.square_feet.toLocaleString()}</p>
                       </div>
                     )}
                     <div>
-                      <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.25rem' }}>Type</p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>Type</p>
                       <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>
                         {selectedProperty.property_type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                       </p>
@@ -367,7 +367,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 
                 <div style={{ marginBottom: '1.5rem' }}>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.75rem' }}>Description</h3>
-                  <p style={{ color: '#4a5568', lineHeight: '1.6' }}>{selectedProperty.description}</p>
+                  <p style={{ color: 'var(--color-text-primary)', lineHeight: '1.6' }}>{selectedProperty.description}</p>
                 </div>
                 
                 {selectedProperty.features && selectedProperty.features.length > 0 && (
@@ -379,7 +379,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                           key={idx}
                           style={{
                             background: '#e6f2ff',
-                            color: '#667eea',
+                            color: 'var(--color-primary)',
                             padding: '0.4rem 0.8rem',
                             borderRadius: '20px',
                             fontSize: '0.85rem',
@@ -429,7 +429,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                   onClick={() => analytics.trackButtonClick(`contact_property_${selectedProperty.id}`, 'neighborhood_map')}
                   style={{
                     width: '100%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                     color: 'white',
                     padding: '1rem',
                     borderRadius: '8px',
@@ -459,7 +459,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 </h3>
                 
                 {properties.length === 0 ? (
-                  <p style={{ textAlign: 'center', color: '#718096', padding: '2rem' }}>
+                  <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '2rem' }}>
                     No properties match your filters.
                   </p>
                 ) : (
@@ -473,30 +473,30 @@ const NeighborhoodMap = ({ api, analytics }) => {
                         }}
                         style={{
                           padding: '1rem',
-                          border: '1px solid #e2e8f0',
+                          border: '1px solid var(--color-border)',
                           borderRadius: '8px',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease'
                         }}
                         onMouseOver={(e) => {
-                          e.currentTarget.style.borderColor = '#667eea';
+                          e.currentTarget.style.borderColor = 'var(--color-primary)';
                           e.currentTarget.style.boxShadow = '0 2px 8px rgba(102, 126, 234, 0.2)';
                         }}
                         onMouseOut={(e) => {
-                          e.currentTarget.style.borderColor = '#e2e8f0';
+                          e.currentTarget.style.borderColor = 'var(--color-border)';
                           e.currentTarget.style.boxShadow = 'none';
                         }}
                       >
                         <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
                           {property.title}
                         </h4>
-                        <p style={{ color: '#718096', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
                           {property.address}, {property.city}
                         </p>
-                        <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#667eea', marginBottom: '0.5rem' }}>
+                        <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
                           {formatPrice(property)}
                         </p>
-                        <p style={{ fontSize: '0.85rem', color: '#4a5568' }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)' }}>
                           🛏️ {property.bedrooms} bed • 🚿 {property.bathrooms} bath
                           {property.square_feet && ` • 📐 ${property.square_feet.toLocaleString()} sq ft`}
                         </p>
