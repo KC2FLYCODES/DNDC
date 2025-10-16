@@ -359,7 +359,7 @@ class PropertyCreate(BaseModel):
     square_feet: Optional[int] = None
     price: Optional[float] = None
     rent: Optional[float] = None
-    status: str = "available"
+    status: str = "pending"
     latitude: float
     longitude: float
     image_url: Optional[str] = None
