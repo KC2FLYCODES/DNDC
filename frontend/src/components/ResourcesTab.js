@@ -98,7 +98,7 @@ const ResourcesTab = ({ api, analytics }) => {
             <p className="card-subtitle">Find housing assistance, utilities help, and community services</p>
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <label style={{ fontSize: '14px', color: '#718096' }}>
+            <label style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               <input
                 type="checkbox"
                 checked={useSupabase}
@@ -136,7 +136,7 @@ const ResourcesTab = ({ api, analytics }) => {
       
       <div className="resource-list">
         {filteredResources.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
             <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔍</div>
             <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
               No resources found
@@ -148,13 +148,13 @@ const ResourcesTab = ({ api, analytics }) => {
             <div style={{ 
               padding: '1rem 1.5rem', 
               background: '#f7fafc', 
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid var(--color-border)',
               fontWeight: '600',
-              color: '#4a5568'
+              color: 'var(--color-text-primary)'
             }}>
               {filteredResources.length} resource{filteredResources.length !== 1 ? 's' : ''} found
               {selectedCategory && ` in ${categories.find(c => c.id === selectedCategory)?.name}`}
-              {useSupabase && <span style={{ color: '#667eea', marginLeft: '10px' }}>(Multi-tenant)</span>}
+              {useSupabase && <span style={{ color: 'var(--color-primary)', marginLeft: '10px' }}>(Multi-tenant)</span>}
             </div>
             {filteredResources.map(resource => (
               <div key={resource.id} className="resource-item">
