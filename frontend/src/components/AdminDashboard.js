@@ -25,7 +25,14 @@ const AdminDashboard = ({ api, onLogout }) => {
     { id: 'analytics', label: 'Analytics Dashboard', icon: '📊' },
     { id: 'applications', label: 'Application Management', icon: '📋' },
     { id: 'resources', label: 'Resource Management', icon: '🏘️' },
-    { id: 'messages', label: 'Contact Messages', icon: '💬' }
+    { id: 'messages', label: 'Contact Messages', icon: '💬' },
+    { id: 'alerts', label: 'Alerts', icon: '🚨' },
+    { id: 'properties', label: 'Properties', icon: '🏘️' },
+    { id: 'stories', label: 'Success Stories', icon: '⭐' },
+    { id: 'events', label: 'Events', icon: '📅' },
+    { id: 'testimonials', label: 'Testimonials', icon: '💬' },
+    { id: 'notifications', label: 'Notifications', icon: '🔔' },
+    { id: 'users', label: 'Admin Users', icon: '👥' }
   ];
 
   useEffect(() => {
