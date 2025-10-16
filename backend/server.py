@@ -1709,6 +1709,7 @@ async def startup_db():
                 "story_text": "After years of struggling with high rent payments, I joined the Mission 180 program in 2023. The financial counseling and down payment assistance made my dream of homeownership a reality. Today, my family owns a beautiful 3-bedroom home in Danville, and my monthly mortgage is actually less than what I was paying in rent!",
                 "program_name": "Mission 180",
                 "achievement_date": datetime.utcnow() - timedelta(days=90),
+                "is_approved": True,
                 "is_featured": True,
                 "created_at": datetime.utcnow()
             },
@@ -1719,6 +1720,7 @@ async def startup_db():
                 "story_text": "After facing financial hardship, DNDC's rental assistance program gave me the breathing room I needed to get back on my feet. The case management team helped me create a budget, find steady employment, and eventually transition to permanent housing. I'm now saving for my own home!",
                 "program_name": "Rental Assistance",
                 "achievement_date": datetime.utcnow() - timedelta(days=60),
+                "is_approved": True,
                 "is_featured": True,
                 "created_at": datetime.utcnow()
             },
@@ -1729,6 +1731,7 @@ async def startup_db():
                 "story_text": "As first-time homebuyers, we were overwhelmed by the process. DNDC's homebuyer education classes and down payment assistance program made it possible. Now our children are growing up in a stable home, and we're building equity for future generations. Thank you, DNDC!",
                 "program_name": "First-Time Homebuyer",
                 "achievement_date": datetime.utcnow() - timedelta(days=120),
+                "is_approved": True,
                 "is_featured": False,
                 "created_at": datetime.utcnow()
             }
