@@ -198,14 +198,10 @@ const ResourceHub = () => {
             >
               📋 Programs
             </button>
-            <button onClick={handleAdminLogout} style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}>
+            <button 
+              onClick={handleAdminLogout} 
+              className="btn-secondary"
+            >
               Logout
             </button>
           </div>
