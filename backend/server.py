@@ -334,7 +334,7 @@ class Property(BaseModel):
     square_feet: Optional[int] = None
     price: Optional[float] = None
     rent: Optional[float] = None
-    status: str = "available"  # available, pending, sold, rented
+    status: str = "pending"  # pending, approved, available, rented, sold
     latitude: float
     longitude: float
     image_url: Optional[str] = None
