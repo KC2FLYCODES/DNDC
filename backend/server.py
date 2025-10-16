@@ -2201,11 +2201,15 @@ async def get_properties(
     bedrooms: Optional[int] = None,
     city: str = "Danville"
 ):
-    """Get all available properties with optional filters"""
+    """Get approved/available properties only (public endpoint)"""
     query = {"city": city}
     
+    # Only show approved, available, rented, or sold properties (not pending)
     if status:
         query["status"] = status
+    else:
+        query["status"] = {"$in": ["approved", "available", "rented", "sold"]}
+    
     if property_type:
         query["property_type"] = property_type
     if bedrooms:
