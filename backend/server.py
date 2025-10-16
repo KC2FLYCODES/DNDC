@@ -1081,6 +1081,327 @@ async def export_applications():
     
     return export_data
 
+# ================================
+# ADMIN - ALERTS MANAGEMENT
+# ================================
+
+@api_router.get("/admin/alerts")
+async def get_admin_alerts():
+    """Get all alerts for admin management"""
+    alerts = await db.alerts.find({}).sort("posted_date", -1).to_list(1000)
+    return [Alert(**alert) for alert in alerts]
+
+@api_router.put("/admin/alerts/{alert_id}")
+async def update_alert_admin(alert_id: str, alert_data: dict):
+    """Admin endpoint to update alert"""
+    update_data = {k: v for k, v in alert_data.items() if v is not None}
+    
+    result = await db.alerts.update_one(
+        {"id": alert_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    return {"success": True, "message": "Alert updated"}
+
+@api_router.delete("/admin/alerts/{alert_id}")
+async def delete_alert_admin(alert_id: str):
+    """Admin endpoint to delete alert"""
+    result = await db.alerts.delete_one({"id": alert_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    return {"success": True, "message": "Alert deleted"}
+
+# ================================
+# ADMIN - PROPERTY MANAGEMENT
+# ================================
+
+@api_router.get("/admin/properties")
+async def get_admin_properties():
+    """Get all properties for admin management"""
+    properties = await db.properties.find({}).sort("created_at", -1).to_list(1000)
+    return [Property(**prop) for prop in properties]
+
+@api_router.put("/admin/properties/{property_id}")
+async def update_property_admin(property_id: str, property_data: PropertyUpdate):
+    """Admin endpoint to update property"""
+    update_data = {k: v for k, v in property_data.dict(exclude_unset=True).items() if v is not None}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    result = await db.properties.update_one(
+        {"id": property_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"success": True, "message": "Property updated"}
+
+@api_router.put("/admin/properties/{property_id}/status")
+async def update_property_status_admin(property_id: str, status: str):
+    """Admin endpoint to update property status (pending, approved, available, rented, sold)"""
+    valid_statuses = ["pending", "approved", "available", "rented", "sold"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
+    
+    result = await db.properties.update_one(
+        {"id": property_id},
+        {"$set": {"status": status, "updated_at": datetime.utcnow()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"success": True, "message": f"Property status updated to {status}"}
+
+@api_router.delete("/admin/properties/{property_id}")
+async def delete_property_admin(property_id: str):
+    """Admin endpoint to delete property"""
+    result = await db.properties.delete_one({"id": property_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+    return {"success": True, "message": "Property deleted"}
+
+# ================================
+# ADMIN - SUCCESS STORIES MANAGEMENT
+# ================================
+
+@api_router.get("/admin/success-stories")
+async def get_admin_success_stories():
+    """Get all success stories for admin management (including unapproved)"""
+    stories = await db.success_stories.find({}).sort("created_at", -1).to_list(1000)
+    return [SuccessStory(**story) for story in stories]
+
+@api_router.put("/admin/success-stories/{story_id}/approve")
+async def approve_success_story(story_id: str):
+    """Admin endpoint to approve success story"""
+    result = await db.success_stories.update_one(
+        {"id": story_id},
+        {"$set": {"is_approved": True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Success story not found")
+    
+    return {"success": True, "message": "Success story approved"}
+
+@api_router.put("/admin/success-stories/{story_id}/reject")
+async def reject_success_story(story_id: str):
+    """Admin endpoint to reject success story"""
+    result = await db.success_stories.update_one(
+        {"id": story_id},
+        {"$set": {"is_approved": False}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Success story not found")
+    
+    return {"success": True, "message": "Success story rejected"}
+
+# ================================
+# ADMIN - EVENTS MANAGEMENT
+# ================================
+
+@api_router.get("/admin/events")
+async def get_admin_events():
+    """Get all community events for admin management"""
+    events = await db.community_events.find({}).sort("event_date", -1).to_list(1000)
+    return [CommunityEvent(**event) for event in events]
+
+@api_router.put("/admin/events/{event_id}")
+async def update_event_admin(event_id: str, event_data: CommunityEventUpdate):
+    """Admin endpoint to update community event"""
+    update_data = {k: v for k, v in event_data.dict(exclude_unset=True).items() if v is not None}
+    
+    result = await db.community_events.update_one(
+        {"id": event_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"success": True, "message": "Event updated"}
+
+@api_router.delete("/admin/events/{event_id}")
+async def delete_event_admin(event_id: str):
+    """Admin endpoint to delete community event"""
+    result = await db.community_events.delete_one({"id": event_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"success": True, "message": "Event deleted"}
+
+# ================================
+# ADMIN - TESTIMONIALS MANAGEMENT
+# ================================
+
+@api_router.get("/admin/testimonials")
+async def get_admin_testimonials():
+    """Get all testimonials for admin management (including unapproved)"""
+    testimonials = await db.testimonials.find({}).sort("created_at", -1).to_list(1000)
+    return [Testimonial(**testimonial) for testimonial in testimonials]
+
+@api_router.put("/admin/testimonials/{testimonial_id}/approve")
+async def approve_testimonial(testimonial_id: str):
+    """Admin endpoint to approve testimonial"""
+    result = await db.testimonials.update_one(
+        {"id": testimonial_id},
+        {"$set": {"is_approved": True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    
+    return {"success": True, "message": "Testimonial approved"}
+
+@api_router.put("/admin/testimonials/{testimonial_id}/reject")
+async def reject_testimonial(testimonial_id: str):
+    """Admin endpoint to reject testimonial"""
+    result = await db.testimonials.update_one(
+        {"id": testimonial_id},
+        {"$set": {"is_approved": False}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    
+    return {"success": True, "message": "Testimonial rejected"}
+
+@api_router.delete("/admin/testimonials/{testimonial_id}")
+async def delete_testimonial_admin(testimonial_id: str):
+    """Admin endpoint to delete testimonial"""
+    result = await db.testimonials.delete_one({"id": testimonial_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    
+    return {"success": True, "message": "Testimonial deleted"}
+
+# ================================
+# ADMIN - NOTIFICATIONS MANAGEMENT
+# ================================
+
+@api_router.get("/admin/notifications")
+async def get_admin_notifications():
+    """Get all notifications for admin management"""
+    notifications = await db.notifications.find({}).sort("created_at", -1).to_list(1000)
+    return [Notification(**notif) for notif in notifications]
+
+@api_router.put("/admin/notifications/{notification_id}")
+async def update_notification_admin(notification_id: str, notification_data: dict):
+    """Admin endpoint to update notification"""
+    update_data = {k: v for k, v in notification_data.items() if v is not None}
+    
+    result = await db.notifications.update_one(
+        {"id": notification_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"success": True, "message": "Notification updated"}
+
+# ================================
+# ADMIN - USER MANAGEMENT
+# ================================
+
+@api_router.get("/admin/users")
+async def get_admin_users():
+    """Get all admin users"""
+    users = await db.admin_users.find({}).sort("created_at", -1).to_list(1000)
+    # Don't return passwords
+    for user in users:
+        user.pop('password_hash', None)
+    return users
+
+@api_router.post("/admin/users")
+async def create_admin_user(user_data: dict):
+    """Create new admin user"""
+    from passlib.hash import bcrypt
+    
+    # Check if username already exists
+    existing = await db.admin_users.find_one({"username": user_data.get("username")})
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # Check if email already exists
+    existing_email = await db.admin_users.find_one({"email": user_data.get("email")})
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already exists")
+    
+    # Hash password
+    password_hash = bcrypt.hash(user_data.get("password"))
+    
+    new_user = {
+        "id": str(uuid.uuid4()),
+        "username": user_data.get("username"),
+        "email": user_data.get("email"),
+        "password_hash": password_hash,
+        "full_name": user_data.get("full_name", ""),
+        "role": user_data.get("role", "admin"),
+        "is_active": True,
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.admin_users.insert_one(new_user)
+    
+    # Return without password
+    new_user.pop('password_hash')
+    return {"success": True, "user": new_user}
+
+@api_router.put("/admin/users/{user_id}")
+async def update_admin_user(user_id: str, user_data: dict):
+    """Update admin user"""
+    from passlib.hash import bcrypt
+    
+    update_data = {}
+    
+    if "username" in user_data:
+        update_data["username"] = user_data["username"]
+    if "email" in user_data:
+        update_data["email"] = user_data["email"]
+    if "full_name" in user_data:
+        update_data["full_name"] = user_data["full_name"]
+    if "role" in user_data:
+        update_data["role"] = user_data["role"]
+    if "is_active" in user_data:
+        update_data["is_active"] = user_data["is_active"]
+    if "password" in user_data and user_data["password"]:
+        update_data["password_hash"] = bcrypt.hash(user_data["password"])
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    result = await db.admin_users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"success": True, "message": "User updated"}
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_admin_user(user_id: str):
+    """Delete admin user"""
+    result = await db.admin_users.delete_one({"id": user_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"success": True, "message": "User deleted"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
