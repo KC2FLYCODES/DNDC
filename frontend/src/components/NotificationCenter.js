@@ -104,8 +104,8 @@ const NotificationCenter = ({ api, analytics, isOpen, onClose }) => {
       {/* Header */}
       <div style={{
         padding: '1.5rem',
-        borderBottom: '2px solid #e2e8f0',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderBottom: '2px solid var(--color-border)',
+        background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
         color: 'white'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -176,20 +176,20 @@ const NotificationCenter = ({ api, analytics, isOpen, onClose }) => {
       {/* Actions */}
       <div style={{
         padding: '1rem 1.5rem',
-        borderBottom: '1px solid #e2e8f0',
+        borderBottom: '1px solid var(--color-border)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <span style={{ fontSize: '0.9rem', color: '#718096' }}>
+        <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
           {notifications.filter(n => !n.is_read).length} unread
         </span>
         <button
           onClick={markAllAsRead}
           style={{
             background: 'transparent',
-            border: '1px solid #667eea',
-            color: '#667eea',
+            border: '1px solid var(--color-primary)',
+            color: 'var(--color-primary)',
             padding: '0.4rem 0.8rem',
             borderRadius: '6px',
             fontSize: '0.85rem',
@@ -204,11 +204,11 @@ const NotificationCenter = ({ api, analytics, isOpen, onClose }) => {
       {/* Notification List */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
             Loading notifications...
           </div>
         ) : notifications.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#718096' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔔</div>
             <p>No notifications yet</p>
           </div>
@@ -221,7 +221,7 @@ const NotificationCenter = ({ api, analytics, isOpen, onClose }) => {
                 style={{
                   padding: '1rem',
                   background: notification.is_read ? '#f7fafc' : 'white',
-                  border: `2px solid ${notification.is_read ? '#e2e8f0' : getPriorityColor(notification.priority)}`,
+                  border: `2px solid ${notification.is_read ? 'var(--color-border)' : getPriorityColor(notification.priority)}`,
                   borderRadius: '10px',
                   cursor: notification.is_read ? 'default' : 'pointer',
                   transition: 'all 0.2s ease',
@@ -257,13 +257,13 @@ const NotificationCenter = ({ api, analytics, isOpen, onClose }) => {
                       fontSize: '1rem',
                       fontWeight: notification.is_read ? '500' : '700',
                       marginBottom: '0.5rem',
-                      color: notification.is_read ? '#4a5568' : '#1a202c'
+                      color: notification.is_read ? 'var(--color-text-primary)' : '#1a202c'
                     }}>
                       {notification.title}
                     </h4>
                     <p style={{
                       fontSize: '0.9rem',
-                      color: notification.is_read ? '#718096' : '#4a5568',
+                      color: notification.is_read ? 'var(--color-text-secondary)' : 'var(--color-text-primary)',
                       lineHeight: '1.5',
                       marginBottom: '0.5rem'
                     }}>
