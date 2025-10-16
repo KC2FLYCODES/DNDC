@@ -228,6 +228,7 @@ class SuccessStory(BaseModel):
     after_image_url: Optional[str] = None
     program_name: Optional[str] = None
     achievement_date: Optional[datetime] = None
+    is_approved: bool = False
     is_featured: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -239,6 +240,7 @@ class SuccessStoryCreate(BaseModel):
     after_image_url: Optional[str] = None
     program_name: Optional[str] = None
     achievement_date: Optional[datetime] = None
+    is_approved: bool = False
     is_featured: bool = False
 
 class CommunityEvent(BaseModel):
