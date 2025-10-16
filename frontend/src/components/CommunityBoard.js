@@ -50,7 +50,8 @@ const CommunityBoard = ({ api, analytics }) => {
         <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
           <button
             onClick={() => setSelectedStory(null)}
-            style={{ background: 'transparent', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', marginBottom: '1rem' }}
+            className="action-btn"
+            style={{ marginBottom: '1rem', background: 'transparent', border: 'none', color: 'var(--color-primary)' }}
           >
             ← Back to stories
           </button>
