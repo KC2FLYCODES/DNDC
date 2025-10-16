@@ -302,6 +302,7 @@ class SuccessStoryUpdate(BaseModel):
     after_image_url: Optional[str] = None
     program_name: Optional[str] = None
     achievement_date: Optional[datetime] = None
+    is_approved: Optional[bool] = None
     is_featured: Optional[bool] = None
 
 class CommunityEventUpdate(BaseModel):
