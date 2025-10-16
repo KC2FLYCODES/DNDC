@@ -102,7 +102,7 @@ const DocumentsTab = ({ api }) => {
               .info-item { margin-bottom: 10px; }
               .label { font-weight: bold; }
               .download-btn { 
-                background: #3498db; color: white; border: none; 
+                background: var(--color-accent); color: white; border: none; 
                 padding: 10px 20px; border-radius: 4px; cursor: pointer;
                 margin-top: 20px;
               }
@@ -178,7 +178,7 @@ const DocumentsTab = ({ api }) => {
           padding: '1.5rem', 
           borderRadius: '12px', 
           marginBottom: '1.5rem',
-          border: '1px solid #e2e8f0'
+          border: '1px solid var(--color-border)'
         }}>
           <div style={{ 
             display: 'flex', 
@@ -188,7 +188,7 @@ const DocumentsTab = ({ api }) => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                 borderRadius: '50%',
                 width: '40px',
                 height: '40px',
@@ -208,7 +208,7 @@ const DocumentsTab = ({ api }) => {
                 }}>
                   Document Progress
                 </div>
-                <div style={{ fontSize: '0.9rem', color: '#718096' }}>
+                <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
                   {documents.filter(d => d.is_uploaded).length} of {documents.length} completed
                 </div>
               </div>
@@ -221,7 +221,7 @@ const DocumentsTab = ({ api }) => {
               fontSize: '1.1rem',
               fontWeight: '700',
               color: documents.length > 0 && documents.filter(d => d.is_uploaded).length === documents.length 
-                ? '#27ae60' : '#3498db'
+                ? '#27ae60' : 'var(--color-accent)'
             }}>
               {documents.length > 0 ? Math.round((documents.filter(d => d.is_uploaded).length / documents.length) * 100) : 0}%
             </div>
@@ -229,14 +229,14 @@ const DocumentsTab = ({ api }) => {
           <div style={{ 
             width: '100%', 
             height: '8px', 
-            background: '#e2e8f0', 
+            background: 'var(--color-border)', 
             borderRadius: '4px', 
             overflow: 'hidden' 
           }}>
             <div 
               style={{ 
                 height: '100%', 
-                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                 width: `${documents.length > 0 ? (documents.filter(d => d.is_uploaded).length / documents.length) * 100 : 0}%`,
                 transition: 'width 0.5s ease'
               }}
@@ -249,7 +249,7 @@ const DocumentsTab = ({ api }) => {
         {documents.map((document, index) => (
           <div key={document.id} className="checklist-item" style={{
             background: 'white',
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--color-border)',
             borderRadius: '12px',
             padding: '1.5rem',
             marginBottom: '1rem',
@@ -276,7 +276,7 @@ const DocumentsTab = ({ api }) => {
                 borderRadius: '50%',
                 background: document.is_uploaded 
                   ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)' 
-                  : '#e2e8f0',
+                  : 'var(--color-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -299,7 +299,7 @@ const DocumentsTab = ({ api }) => {
                 </div>
                 <div style={{ 
                   fontSize: '0.95rem', 
-                  color: '#718096', 
+                  color: 'var(--color-text-secondary)', 
                   lineHeight: '1.5',
                   marginBottom: document.is_uploaded ? '0.75rem' : '1rem'
                 }}>
@@ -348,7 +348,7 @@ const DocumentsTab = ({ api }) => {
                   />
                   <button
                     style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                       color: 'white',
                       border: 'none',
                       borderRadius: '8px',
@@ -389,7 +389,7 @@ const DocumentsTab = ({ api }) => {
                     onClick={() => handleFileView(document.id)}
                     style={{
                       background: 'white',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       padding: '0.5rem 1rem',
                       fontSize: '0.85rem',
@@ -415,7 +415,7 @@ const DocumentsTab = ({ api }) => {
                     disabled={uploadingId === document.id}
                     style={{
                       background: 'white',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       padding: '0.5rem 1rem',
                       fontSize: '0.85rem',
@@ -434,7 +434,7 @@ const DocumentsTab = ({ api }) => {
                     onClick={() => window.open(`${api}/documents/${document.id}/download`, '_blank')}
                     style={{
                       background: 'white',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '8px',
                       padding: '0.5rem 1rem',
                       fontSize: '0.85rem',
@@ -481,9 +481,9 @@ const DocumentsTab = ({ api }) => {
         <div style={{ 
           marginTop: '2rem', 
           padding: '1.5rem', 
-          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
+          background: 'linear-gradient(135deg, var(--color-background) 0%, var(--color-border) 100%)', 
           borderRadius: '12px',
-          border: '1px solid #e2e8f0'
+          border: '1px solid var(--color-border)'
         }}>
           <h4 style={{ 
             marginBottom: '1rem', 
@@ -496,7 +496,7 @@ const DocumentsTab = ({ api }) => {
           }}>
             📄 File Upload Guidelines
           </h4>
-          <div style={{ fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.6' }}>
+          <div style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', lineHeight: '1.6' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
               <div>
                 <strong style={{ color: '#2d3748' }}>Accepted formats:</strong>
