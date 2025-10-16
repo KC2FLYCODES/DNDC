@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  AlertsManagement,
+  PropertiesManagement,
+  StoriesManagement,
+  EventsManagement,
+  TestimonialsManagement,
+  NotificationsManagement,
+  UsersManagement
+} from './AdminManagementTabs';
 
 const AdminDashboard = ({ api, onLogout }) => {
   const [activeTab, setActiveTab] = useState('analytics');
