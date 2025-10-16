@@ -682,6 +682,7 @@ const AdminDashboard = ({ api, onLogout }) => {
         {activeTab === 'applications' && renderApplications()}
         {activeTab === 'resources' && renderResources()}
         {activeTab === 'messages' && renderMessages()}
+        {activeTab === 'programs' && <ProgramManagement />}
         {activeTab === 'alerts' && <AlertsManagement api={api} />}
         {activeTab === 'properties' && <PropertiesManagement api={api} />}
         {activeTab === 'stories' && <StoriesManagement api={api} />}
