@@ -392,7 +392,7 @@ const AdminDashboard = ({ api, onLogout }) => {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: '#718096'
+                  color: 'var(--color-text-secondary)'
                 }}
               >
                 ✕
@@ -516,7 +516,7 @@ const AdminDashboard = ({ api, onLogout }) => {
               }}
               style={{
                 padding: '0.5rem',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
                 borderRadius: '6px',
                 background: 'white'
               }}
