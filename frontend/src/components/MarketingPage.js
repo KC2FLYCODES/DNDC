@@ -138,29 +138,16 @@ const MarketingPage = () => {
             manage applications, and empower your community.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button style={{
-              background: 'white',
-              color: 'var(--color-primary)',
-              border: 'none',
-              padding: '1rem 2rem',
-              borderRadius: '8px',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-            }} onClick={() => document.getElementById('demo-section').scrollIntoView()}>
+            <button 
+              className="btn-primary"
+              onClick={() => document.getElementById('demo-section').scrollIntoView()}
+            >
               Request Demo
             </button>
-            <button style={{
-              background: 'transparent',
-              color: 'white',
-              border: '2px solid white',
-              padding: '1rem 2rem',
-              borderRadius: '8px',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }} onClick={() => document.getElementById('features-section').scrollIntoView()}>
+            <button 
+              className="btn-secondary"
+              onClick={() => document.getElementById('features-section').scrollIntoView()}
+            >
               View Features
             </button>
           </div>
