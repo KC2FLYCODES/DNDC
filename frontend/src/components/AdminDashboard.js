@@ -36,6 +36,7 @@ const AdminDashboard = ({ api, onLogout }) => {
     { id: 'applications', label: 'Application Management', icon: '📋' },
     { id: 'resources', label: 'Resource Management', icon: '🏘️' },
     { id: 'messages', label: 'Contact Messages', icon: '💬' },
+    { id: 'programs', label: 'Programs (Supabase)', icon: '📋' },
     { id: 'alerts', label: 'Alerts', icon: '🚨' },
     { id: 'properties', label: 'Properties', icon: '🏘️' },
     { id: 'stories', label: 'Success Stories', icon: '⭐' },
