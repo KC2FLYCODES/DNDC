@@ -2029,8 +2029,11 @@ async def update_notification_preferences(user_id: str, preferences: dict):
 # Success Stories
 @api_router.get("/success-stories", response_model=List[SuccessStory])
 async def get_success_stories(featured_only: bool = False):
-    """Get success stories"""
-    query = {"is_featured": True} if featured_only else {}
+    """Get approved success stories only (public endpoint)"""
+    if featured_only:
+        query = {"is_featured": True, "is_approved": True}
+    else:
+        query = {"is_approved": True}
     stories = await db.success_stories.find(query).sort("created_at", -1).to_list(1000)
     return [SuccessStory(**story) for story in stories]
 
