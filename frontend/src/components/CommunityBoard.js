@@ -125,8 +125,8 @@ const CommunityBoard = ({ api, analytics }) => {
   const renderEvents = () => (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Community Events</h3>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Join us for workshops, celebrations, and community gatherings</p>
+        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>Community Events</h3>
+        <p style={{ color: '#333333', fontWeight: '500' }}>Join us for workshops, celebrations, and community gatherings</p>
       </div>
 
       {selectedEvent ? (
