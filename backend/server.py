@@ -2724,12 +2724,3 @@ async def shutdown_db_client():
 
 # Include the API router
 app.include_router(api_router)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
