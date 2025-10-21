@@ -1402,6 +1402,139 @@ async def delete_admin_user(user_id: str):
     
     return {"success": True, "message": "User deleted"}
 
+# ================================
+# SELF-SERVICE ORGANIZATION SIGNUP
+# ================================
+
+@api_router.post("/organizations/signup")
+async def organization_signup(signup_data: dict):
+    """
+    Self-service organization signup endpoint
+    Creates organization, admin user, and sets up initial configuration
+    """
+    from passlib.hash import bcrypt
+    
+    try:
+        # Extract data
+        org_data = signup_data.get('organization', {})
+        admin_data = signup_data.get('admin', {})
+        plan_data = signup_data.get('plan', {})
+        
+        # Validate required fields
+        if not org_data.get('name') or not org_data.get('slug'):
+            raise HTTPException(status_code=400, detail="Organization name and slug are required")
+        
+        if not admin_data.get('email') or not admin_data.get('password'):
+            raise HTTPException(status_code=400, detail="Admin email and password are required")
+        
+        # Check if slug is already taken
+        existing_org = await db.organizations.find_one({"slug": org_data.get('slug')})
+        if existing_org:
+            raise HTTPException(status_code=400, detail="Organization slug already taken. Please choose another.")
+        
+        # Check if admin email already exists
+        existing_admin = await db.admin_users.find_one({"email": admin_data.get('email')})
+        if existing_admin:
+            raise HTTPException(status_code=400, detail="Admin email already registered")
+        
+        # Generate organization ID
+        org_id = str(uuid.uuid4())
+        
+        # Create organization in MongoDB
+        organization = {
+            "id": org_id,
+            "name": org_data.get('name'),
+            "type": org_data.get('type', 'cdc'),
+            "slug": org_data.get('slug'),
+            "contact_name": org_data.get('contact_name'),
+            "contact_email": org_data.get('contact_email'),
+            "contact_phone": org_data.get('contact_phone', ''),
+            "address": org_data.get('address', ''),
+            "city": org_data.get('city', ''),
+            "state": org_data.get('state', ''),
+            "zip_code": org_data.get('zip_code', ''),
+            "settings": org_data.get('settings', {}),
+            "plan_tier": plan_data.get('tier', 'professional'),
+            "billing_cycle": plan_data.get('billing_cycle', 'monthly'),
+            "status": "pending_payment",  # Requires payment activation
+            "trial_ends_at": datetime.utcnow() + timedelta(days=14),  # 14-day trial
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.organizations.insert_one(organization)
+        
+        # Create admin user
+        admin_user = {
+            "id": str(uuid.uuid4()),
+            "organization_id": org_id,
+            "username": admin_data.get('username'),
+            "email": admin_data.get('email'),
+            "password_hash": bcrypt.hash(admin_data.get('password')),
+            "full_name": admin_data.get('full_name', ''),
+            "role": "admin",
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.admin_users.insert_one(admin_user)
+        
+        # Create organization in Supabase (if Supabase is configured)
+        try:
+            supabase = get_supabase_client()
+            if supabase:
+                supabase_org = {
+                    "id": org_id,
+                    "organization_name": org_data.get('name'),
+                    "slug": org_data.get('slug'),
+                    "settings": org_data.get('settings', {})
+                }
+                supabase.table('organizations').insert(supabase_org).execute()
+        except Exception as e:
+            # Log error but don't fail the signup
+            logging.warning(f"Failed to create organization in Supabase: {str(e)}")
+        
+        # TODO: Send welcome email with verification link
+        # TODO: Send payment setup instructions
+        
+        # Return success response
+        return {
+            "success": True,
+            "message": "Organization created successfully",
+            "organization": {
+                "id": org_id,
+                "name": org_data.get('name'),
+                "slug": org_data.get('slug'),
+                "trial_ends_at": organization['trial_ends_at'].isoformat(),
+                "status": organization['status']
+            },
+            "admin": {
+                "email": admin_data.get('email'),
+                "username": admin_data.get('username')
+            },
+            "next_steps": [
+                "Check your email for verification",
+                "Complete payment setup to activate",
+                "Log in to your admin dashboard",
+                "Customize your portal settings"
+            ]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Organization signup error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create organization. Please try again.")
+
+@api_router.get("/organizations/check-slug/{slug}")
+async def check_slug_availability(slug: str):
+    """Check if organization slug is available"""
+    existing = await db.organizations.find_one({"slug": slug})
+    return {
+        "available": existing is None,
+        "slug": slug
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
