@@ -7,13 +7,13 @@
   --color-accent-dark: #0056b3;
   
   /* Neutral Colors */
-  --color-text-primary: #1F2937;
-  --color-text-secondary: #6B7280;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
   --color-text-tertiary: #9CA3AF;
-  --color-background: #F9FAFB;
+  --color-background: #F0F9F0;
   --color-card: #FFFFFF;
   --color-border: #E5E7EB;
-  --color-border-light: #F3F4F6;
+  --color-border-light: #F0F9F0;
   
   /* Semantic Colors */
   --color-success: #5CB85C;
