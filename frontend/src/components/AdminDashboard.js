@@ -681,6 +681,7 @@ const AdminDashboard = ({ api, onLogout }) => {
         {error && <div className="error">{error}</div>}
         
         {activeTab === 'analytics' && renderAnalytics()}
+        {activeTab === 'logo' && <LogoManagement api={api} />}
         {activeTab === 'applications' && renderApplications()}
         {activeTab === 'resources' && renderResources()}
         {activeTab === 'messages' && renderMessages()}
