@@ -242,8 +242,8 @@ const CommunityBoard = ({ api, analytics }) => {
   const renderTestimonials = () => (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Community Testimonials</h3>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Hear what our community members have to say</p>
+        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>Community Testimonials</h3>
+        <p style={{ color: '#333333', fontWeight: '500' }}>Hear what our community members have to say</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
