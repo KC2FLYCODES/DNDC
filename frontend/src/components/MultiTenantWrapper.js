@@ -18,7 +18,7 @@ export const TenantProvider = ({ children }) => {
     organizationId: null,
     organizationName: 'DNDC Resource Hub',
     slug: currentOrganization,
-    logoUrl: 'https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg',
+    logoUrl: process.env.REACT_APP_LOGO_URL || 'https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg',
     themeColors: {
       primary: 'var(--color-primary)',
       secondary: 'var(--color-primary-dark)'
