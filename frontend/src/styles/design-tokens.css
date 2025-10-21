@@ -1,10 +1,10 @@
 :root {
-  /* Primary Brand Colors */
-  --color-primary: #2C5F8D;
-  --color-primary-dark: #1A3A52;
-  --color-primary-light: #3A7FB8;
-  --color-accent: #3A9B9F;
-  --color-accent-dark: #2E7D80;
+  /* DNDC Brand Colors - Based on Official Website */
+  --color-primary: #5CB85C;
+  --color-primary-dark: #4A9D4A;
+  --color-primary-light: #7BC67B;
+  --color-accent: #007bff;
+  --color-accent-dark: #0056b3;
   
   /* Neutral Colors */
   --color-text-primary: #1F2937;
