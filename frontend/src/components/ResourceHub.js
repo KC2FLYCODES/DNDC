@@ -145,7 +145,7 @@ const ResourceHub = () => {
       case 'community':
         return <CommunityBoard {...commonProps} />;
       case 'applications':
-        return <ApplicationTracker {...commonProps} />;
+        return <EnterpriseApplicationTracker {...commonProps} />;
       case 'calculator':
         return <FinancialCalculator {...commonProps} />;
       case 'documents':
