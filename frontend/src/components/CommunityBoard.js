@@ -42,8 +42,8 @@ const CommunityBoard = ({ api, analytics }) => {
   const renderStories = () => (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Success Stories</h3>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Real stories from real residents who found success through DNDC programs</p>
+        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>Success Stories</h3>
+        <p style={{ color: '#333333', fontWeight: '500' }}>Real stories from real residents who found success through DNDC programs</p>
       </div>
 
       {selectedStory ? (
