@@ -293,7 +293,7 @@ const CommunityBoard = ({ api, analytics }) => {
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>
           🌟 Community Board
         </h2>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>
+        <p style={{ color: '#333333', fontSize: '1rem', fontWeight: '500' }}>
           Celebrating our community's successes and upcoming events
         </p>
       </div>
