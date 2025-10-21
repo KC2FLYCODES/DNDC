@@ -34,6 +34,7 @@ const AdminDashboard = ({ api, onLogout }) => {
 
   const adminTabs = [
     { id: 'analytics', label: 'Analytics Dashboard', icon: '📊' },
+    { id: 'logo', label: 'Logo & Branding', icon: '🎨' },
     { id: 'applications', label: 'Application Management', icon: '📋' },
     { id: 'resources', label: 'Resource Management', icon: '🏘️' },
     { id: 'messages', label: 'Contact Messages', icon: '💬' },
