@@ -10,6 +10,7 @@ import {
   UsersManagement
 } from './AdminManagementTabs';
 import ProgramManagement from './ProgramManagement';
+import LogoManagement from './LogoManagement';
 
 const AdminDashboard = ({ api, onLogout }) => {
   const [activeTab, setActiveTab] = useState('analytics');
