@@ -375,7 +375,7 @@ const ResourceHub = () => {
         <div className="footer-content">
           <div className="footer-logo">
             <img 
-              src="https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg" 
+              src={process.env.REACT_APP_LOGO_URL || "https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg"} 
               alt="DNDC Logo" 
             />
           </div>
