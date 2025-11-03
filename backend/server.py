@@ -18,10 +18,10 @@ from supabase_models import *
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection (optional - using Supabase as primary database)
+# MongoDB is not required as we're using Supabase as the primary database
+client = None
+db = None
 
 # Supabase configuration
 DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280"  # DNDC organization ID
@@ -1555,6 +1555,11 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup_db():
+    # Skip MongoDB initialization if not available (using Supabase instead)
+    if db is None:
+        logger.info("MongoDB not available. Using Supabase as primary database.")
+        return
+
     # Initialize default documents checklist
     existing_docs = await db.documents.count_documents({})
     if existing_docs == 0:
