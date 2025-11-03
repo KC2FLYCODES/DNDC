@@ -13,6 +13,14 @@ SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://your-project.supabase.co')
 SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY', 'your-anon-key')
 SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY', 'your-service-role-key')
 
+# Validate environment variables
+if SUPABASE_URL == 'https://your-project.supabase.co':
+    raise ValueError("SUPABASE_URL environment variable is not configured")
+if SUPABASE_ANON_KEY == 'your-anon-key':
+    raise ValueError("SUPABASE_ANON_KEY environment variable is not configured")
+if SUPABASE_SERVICE_KEY == 'your-service-role-key':
+    raise ValueError("SUPABASE_SERVICE_KEY environment variable is not configured")
+
 # Create Supabase clients
 def get_supabase_client(service_role: bool = False) -> Client:
     """

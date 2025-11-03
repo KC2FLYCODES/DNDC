@@ -175,8 +175,8 @@ const MarketingPage = () => {
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
               <h3 style={{ color: '#2d3748', marginBottom: '1rem' }}>Launch in Days, Not Months</h3>
               <p style={{ color: 'var(--color-text-secondary)', lineHeight: '1.6' }}>
-                Skip expensive custom development. Get a proven platform that's already serving 
-                residents successfully at DNDC.
+                Skip expensive custom development. Get a proven platform that's already serving
+                residents successfully in multiple communities.
               </p>
             </div>
             <div style={{ 

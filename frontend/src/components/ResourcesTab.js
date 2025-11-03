@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280";
+import { useTenant } from './MultiTenantWrapper';
 
 const ResourcesTab = ({ api, analytics }) => {
+  const { organizationId } = useTenant();
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');

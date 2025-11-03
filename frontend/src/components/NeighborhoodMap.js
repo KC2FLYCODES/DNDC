@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
+import { useTenant } from './MultiTenantWrapper';
 
 // Fix for default marker icons in React-Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -40,6 +41,7 @@ function MapCenter({ center }) {
 }
 
 const NeighborhoodMap = ({ api, analytics }) => {
+  const { organizationName } = useTenant();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -415,7 +417,7 @@ const NeighborhoodMap = ({ api, analytics }) => {
                 }}>
                   <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem' }}>Contact Information</h3>
                   <p style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                    {selectedProperty.contact_name || 'DNDC Housing Team'}
+                    {selectedProperty.contact_name || `${organizationName} Housing Team`}
                   </p>
                   <p style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
                     📞 {selectedProperty.contact_phone || '434-555-0150'}

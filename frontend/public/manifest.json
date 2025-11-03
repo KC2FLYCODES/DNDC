@@ -1,7 +1,7 @@
 {
-  "short_name": "DNDC Hub",
-  "name": "DNDC Resource Hub - Community Development Portal",
-  "description": "Access housing assistance, financial calculators, document upload, and community resources for Danville residents",
+  "short_name": "Resource Hub",
+  "name": "Community Resource Hub - Community Development Portal",
+  "description": "Access housing assistance, financial calculators, document upload, and community resources",
   "icons": [
     {
       "src": "icon-72x72.png",

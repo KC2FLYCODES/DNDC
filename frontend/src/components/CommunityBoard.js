@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTenant } from './MultiTenantWrapper';
 
 const CommunityBoard = ({ api, analytics }) => {
+  const { organizationName } = useTenant();
   const [activeSection, setActiveSection] = useState('stories');
   const [successStories, setSuccessStories] = useState([]);
   const [events, setEvents] = useState([]);
@@ -43,7 +45,7 @@ const CommunityBoard = ({ api, analytics }) => {
     <div>
       <div style={{ marginBottom: '2rem' }}>
         <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1a202c' }}>Success Stories</h3>
-        <p style={{ color: '#333333', fontWeight: '500' }}>Real stories from real residents who found success through DNDC programs</p>
+        <p style={{ color: '#333333', fontWeight: '500' }}>Real stories from real residents who found success through {organizationName} programs</p>
       </div>
 
       {selectedStory ? (

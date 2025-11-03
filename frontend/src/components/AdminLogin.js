@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useTenant } from './MultiTenantWrapper';
 
 const AdminLogin = ({ api, onLogin }) => {
+  const { organizationName, logoUrl } = useTenant();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,13 +37,13 @@ const AdminLogin = ({ api, onLogin }) => {
       <div className="admin-login-card">
         <div className="admin-login-header">
           <div className="admin-login-logo">
-            <img 
-              src={process.env.REACT_APP_LOGO_URL || "https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg"} 
-              alt="DNDC Logo" 
+            <img
+              src={logoUrl}
+              alt={`${organizationName} Logo`}
             />
           </div>
           <h2>Admin Login</h2>
-          <p>DNDC Resource Hub Administration</p>
+          <p>{organizationName} Administration</p>
         </div>
         
         {error && <div className="error">{error}</div>}

@@ -9,10 +9,10 @@ const LogoManagement = ({ api }) => {
   // Preset logo options
   const logoPresets = [
     {
-      id: 'dndc-current',
-      name: 'DNDC Current Logo',
-      url: 'https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg',
-      description: 'Official DNDC logo'
+      id: 'default-logo',
+      name: 'Default Organization Logo',
+      url: process.env.REACT_APP_LOGO_URL || '/logo192.png',
+      description: 'Default organization logo'
     },
     {
       id: 'placeholder-1',

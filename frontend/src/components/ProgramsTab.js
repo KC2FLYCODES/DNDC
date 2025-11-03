@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280";
+import { useTenant } from './MultiTenantWrapper';
 
 const ProgramsTab = ({ api, analytics }) => {
+  const { organizationId, organizationName } = useTenant();
   const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +72,7 @@ const ProgramsTab = ({ api, analytics }) => {
     try {
       setSubmitting(true);
       const response = await axios.post(
-        `${api}/organizations/${DNDC_ORG_ID}/programs/${selectedProgram.id}/applications`,
+        `${api}/organizations/${organizationId}/programs/${selectedProgram.id}/applications`,
         applicationData
       );
       
@@ -104,7 +104,7 @@ const ProgramsTab = ({ api, analytics }) => {
       <div className="card">
         <div className="card-header">
           <div>
-            <h3 className="card-title">DNDC Housing Programs</h3>
+            <h3 className="card-title">{organizationName} Housing Programs</h3>
             <p className="card-subtitle">Explore available housing assistance and community development programs</p>
           </div>
         </div>

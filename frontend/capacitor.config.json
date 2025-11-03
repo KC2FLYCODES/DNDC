@@ -1,6 +1,6 @@
 {
-  "appId": "com.dndc.resourcehub",
-  "appName": "DNDC Resource Hub",
+  "appId": "com.resourcehub.app",
+  "appName": "Community Resource Hub",
   "webDir": "build",
   "server": {
     "androidScheme": "https"
@@ -19,7 +19,7 @@
     }
   },
   "ios": {
-    "scheme": "DNDC Resource Hub",
+    "scheme": "Community Resource Hub",
     "limitsNavigationsToAppBoundDomains": true
   },
   "android": {

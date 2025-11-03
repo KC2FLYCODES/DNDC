@@ -16,6 +16,7 @@ import ProgramManagement from './ProgramManagement';
 import NeighborhoodMap from './NeighborhoodMap';
 import CommunityBoard from './CommunityBoard';
 import NotificationCenter from './NotificationCenter';
+import { useTenant } from './MultiTenantWrapper';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -34,6 +35,7 @@ const ResourceHub = () => {
   const { isNative, platform, scheduleNotification } = useCapacitor();
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const { organizationName, logoUrl } = useTenant();
 
   const tabs = [
     { id: 'resources', label: 'Community Resources', icon: '🏘️' },
@@ -44,7 +46,7 @@ const ResourceHub = () => {
     { id: 'calculator', label: 'Financial Calculator', icon: '💰' },
     { id: 'documents', label: 'Document Upload', icon: '📄' },
     { id: 'alerts', label: 'Alerts & Updates', icon: '📢' },
-    { id: 'contact', label: 'Contact DNDC', icon: '📞' }
+    { id: 'contact', label: `Contact ${organizationName}`, icon: '📞' }
   ];
 
   const currentTab = tabs.find(tab => tab.id === activeTab);
@@ -61,12 +63,12 @@ const ResourceHub = () => {
     
     // Show native app welcome message
     if (isNative) {
-      console.log(`DNDC Resource Hub running on ${platform}`);
-      
+      console.log(`${organizationName} Resource Hub running on ${platform}`);
+
       // Schedule a welcome notification (optional)
       const welcomeDate = new Date(Date.now() + 5000); // 5 seconds from now
       scheduleNotification(
-        'Welcome to DNDC Resource Hub!', 
+        `Welcome to ${organizationName}!`,
         'Access housing assistance, financial tools, and community resources anytime.',
         welcomeDate
       );
@@ -83,7 +85,7 @@ const ResourceHub = () => {
       document.removeEventListener('mousedown', handleClickOutside);
       clearInterval(notificationInterval);
     };
-  }, [analytics, isNative, platform, scheduleNotification]);
+  }, [analytics, isNative, platform, scheduleNotification, organizationName]);
 
   const fetchUnreadCount = async () => {
     try {
@@ -171,7 +173,7 @@ const ResourceHub = () => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <h2 style={{ margin: 0 }}>DNDC Admin Portal</h2>
+          <h2 style={{ margin: 0 }}>{organizationName} Admin Portal</h2>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <button
               onClick={() => setActiveAdminTab('dashboard')}
@@ -226,15 +228,15 @@ const ResourceHub = () => {
       <header className="resource-hub-header">
         <div className="header-content">
           <div className="logo-container">
-            <img 
-              src={process.env.REACT_APP_LOGO_URL || "https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg"} 
-              alt="DNDC Logo" 
+            <img
+              src={logoUrl}
+              alt={`${organizationName} Logo`}
               loading="eager"
             />
           </div>
           <div className="header-text">
-            <h1 className="resource-hub-title">DNDC Resource Hub</h1>
-            <div className="subtitle">Danville Neighborhood Development Corporation</div>
+            <h1 className="resource-hub-title">{organizationName}</h1>
+            <div className="subtitle">Community Development Resource Hub</div>
             <div className="powered-by">
               {isNative ? `Native App • ${platform}` : 'Community Development Technology Platform'}
             </div>
@@ -374,13 +376,13 @@ const ResourceHub = () => {
       <footer className="app-footer">
         <div className="footer-content">
           <div className="footer-logo">
-            <img 
-              src={process.env.REACT_APP_LOGO_URL || "https://customer-assets.emergentagent.com/job_e3758f2b-c14a-4943-82a6-1240008fd07b/artifacts/s5dpstmb_DNDC%20logo.jpg"} 
-              alt="DNDC Logo" 
+            <img
+              src={logoUrl}
+              alt={`${organizationName} Logo`}
             />
           </div>
           <div className="footer-text">
-            © 2025 Danville Neighborhood Development Corporation
+            © 2025 {organizationName}
           </div>
           <div className="footer-tagline">
             Empowering Communities • Building Futures • Creating Opportunities

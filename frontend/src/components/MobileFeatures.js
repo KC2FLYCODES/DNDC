@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import useCapacitor from '../hooks/useCapacitor';
+import { useTenant } from './MultiTenantWrapper';
 
 const MobileFeatures = ({ api, analytics }) => {
+  const { organizationName } = useTenant();
   const { isNative, platform, takePicture, getPicture, scheduleNotification } = useCapacitor();
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ const MobileFeatures = ({ api, analytics }) => {
   };
 
   const handleScheduleReminder = async () => {
-    const title = 'DNDC Reminder';
+    const title = `${organizationName} Reminder`;
     const body = 'Don\'t forget to upload your required documents for your housing application.';
     const date = new Date(Date.now() + 60000); // 1 minute from now for demo
 
@@ -67,7 +69,7 @@ const MobileFeatures = ({ api, analytics }) => {
       <div className="mobile-features-prompt">
         <div className="app-download-banner">
           <h3>📱 Get the Mobile App</h3>
-          <p>Download the DNDC Resource Hub mobile app for enhanced features:</p>
+          <p>Download the {organizationName} mobile app for enhanced features:</p>
           <ul>
             <li>📷 Take photos for document uploads</li>
             <li>🔔 Push notifications for important updates</li>

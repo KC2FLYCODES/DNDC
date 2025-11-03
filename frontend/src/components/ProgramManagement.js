@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const DNDC_ORG_ID = "97fef08b-4fde-484d-b334-4b9450f9a280";
+import { useTenant } from './MultiTenantWrapper';
 
 const ProgramManagement = ({ api }) => {
+  const { organizationId, organizationName } = useTenant();
   const [programs, setPrograms] = useState([]);
   const [applications, setApplications] = useState([]);
   const [selectedTab, setSelectedTab] = useState('programs');
@@ -212,7 +212,7 @@ const ProgramManagement = ({ api }) => {
             Program Management
           </h2>
           <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>
-            Create and manage housing assistance programs for DNDC
+            Create and manage housing assistance programs for {organizationName}
           </p>
         </div>
         <button

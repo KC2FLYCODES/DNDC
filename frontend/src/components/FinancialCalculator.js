@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useTenant } from './MultiTenantWrapper';
 
 const FinancialCalculator = ({ api }) => {
+  const { organizationName } = useTenant();
   const [activeCalculator, setActiveCalculator] = useState('loan');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -265,7 +267,7 @@ const FinancialCalculator = ({ api }) => {
           </div>
           {results.assistance_amount > 0 && (
             <div className="assistance-note">
-              💡 You may be eligible for utility assistance programs. Contact DNDC for more information.
+              💡 You may be eligible for utility assistance programs. Contact {organizationName} for more information.
             </div>
           )}
         </div>
